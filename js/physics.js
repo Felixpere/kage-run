@@ -54,7 +54,7 @@ function step(){
   if(pressed.beam&&G.form>=3&&G.chakra>=50&&!G.beam){G.chakra-=50;G.beam={x:G.P.x+20,y:G.P.y+45,dir:G.P.face,life:20,w:0};G.shake=14;doFlash(.6,240);G.P.vx=0;hitstop(10)}
   for(const k in pressed)pressed[k]=false;for(const k in released)released[k]=false;
   if(G.chakra<100)G.chakra+=0.05;
-  if(G.sexy>0)G.sexy--;if(G.P.kick>0)G.P.kick--;if(G.P.kickCd>0)G.P.kickCd--;if(G.P.dashCd>0)G.P.dashCd--;if(G.P.inv>0)G.P.inv--;if(G.P.aura>0)G.P.aura--;if(G.P.land>0)G.P.land--;if(G.henge>0)G.henge--;
+  if(G.sexy>0)G.sexy--;if(G.P.kick>0)G.P.kick--;if(G.P.kickCd>0)G.P.kickCd--;if(G.P.dashCd>0)G.P.dashCd--;if(G.P.inv>0)G.P.inv--;if(G.P.aura>0)G.P.aura--;if(G.P.land>0)G.P.land--;if(G.P.hurtT>0)G.P.hurtT--;if(G.henge>0)G.henge--;
   if(G.P.dash>0){if(G.form<3&&G.t%2==0)burst(G.P.x+20,G.P.y+60,'#D4503A',3);if(G.form>=3){for(let i=0;i<3;i++)G.particles.push({x:G.P.x+20-G.P.face*(20+i*14),y:G.P.y+30+Math.random()*60,vx:-G.P.face*3,vy:-1.5,life:22,col:i===0?'#FFF6D0':i===1?'#FF8A2B':'#E0701A',g:0});if(G.P.ground&&G.t%3==0)G.scorch.push({x:G.P.x+20,y:G.P.y+90,life:900})}}
   if(G.henge>0&&G.t%3==0)G.particles.push({x:G.P.x+Math.random()*40,y:G.P.y+Math.random()*90,vx:0,vy:-1.5,life:20,col:'#FF5CC8',g:0});
   // ---- physics: heavy fast fall; dash crouches the hitbox

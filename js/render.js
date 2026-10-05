@@ -4,6 +4,7 @@ import { COLS, bushes, scrolls0, goal } from './level.js';
 import { NINJAS, HENGE, DANCER, ONI, ONI2, KAPPA, SHELL, SNAKE, MORTAR, LANTERN, USED,
          GROUND2, DIRT2, BLOCK2, FROG, ONIGIRI_IMG, SCROLL_IMG } from './sprites.js';
 import { dust } from './fx.js';
+import { drawHero } from './hero.js';
 
 function drawBamboo(x,y,w,h){const g=ctx.createLinearGradient(x,0,x+w,0);g.addColorStop(0,'#1a7a28');g.addColorStop(0.25,'#35C94A');g.addColorStop(0.55,'#239F32');g.addColorStop(1,'#0F5C1C');ctx.fillStyle=g;ctx.fillRect(x,y,w,h);ctx.fillStyle='#2B1A10';ctx.fillRect(x-1,y,1,h);ctx.fillRect(x+w,y,1,h);ctx.fillStyle='#45d85a';ctx.fillRect(x,y,w,6);ctx.fillStyle='#0F5C1C';ctx.fillRect(x,y+6,w,3);ctx.fillStyle='#2B1A10';ctx.fillRect(x+Math.round(w/2)-2,y+16,4,h-22);ctx.fillStyle='#0F5C1C';for(let yy=y+40;yy<y+h-10;yy+=36)ctx.fillRect(x+4,yy,w-8,2)}
 function glow(x,y,r,col){const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,col+'ff');g.addColorStop(0.5,col+'88');g.addColorStop(1,col+'00');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill()}
@@ -78,7 +79,9 @@ function drawPlayer(){
   ctx.fillStyle=col;ctx.fillRect(x+(G.P.face>0?-26:40),y+16+Math.sin(G.t/5)*3,26,5);ctx.fillRect(x+(G.P.face>0?-22:38),y+24+Math.cos(G.t/5)*3,22,5);
   const sprinting=Math.abs(G.P.vx)>6&&G.P.ground&&G.P.dash<=0,sxs=G.P.dash>0?1.3:sprinting?1.15:G.P.land>0?1.12:1,sys=G.P.dash>0?0.55:sprinting?0.9:G.P.land>0?0.86:1;
   if(sprinting){ctx.fillStyle='#9C4406';for(let i=0;i<3;i++)ctx.fillRect(x+20-G.P.face*(34+i*4),y+30+i*18,-G.P.face*22,3)}
-  ctx.save();ctx.translate(x+20,y+90);ctx.scale(sxs*(G.P.face<0?-1:1),sys);ctx.drawImage(sp,-30,-90);ctx.restore();
+  if(!drawHero(x,y,G.P.face,sxs,sys)){
+    ctx.save();ctx.translate(x+20,y+90);ctx.scale(sxs*(G.P.face<0?-1:1),sys);ctx.drawImage(sp,-30,-90);ctx.restore();
+  }
   if(G.sexy>0){const sw=Math.sin(G.t/6);for(const dx of [-34,74]){ctx.save();ctx.translate(x+dx,y+34+sw*6);ctx.rotate(dx<0?-0.6+sw*0.3:0.6-sw*0.3);ctx.fillStyle='#FF5CC8';ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,30,Math.PI*1.15,Math.PI*1.85);ctx.closePath();ctx.fill();ctx.fillStyle='#FFF6D0';for(let k=0;k<4;k++){ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,27,Math.PI*(1.2+k*0.17),Math.PI*(1.2+k*0.17)+0.08);ctx.closePath();ctx.fill()}ctx.restore()}
     if(G.t%8==0)G.particles.push({x:x+Math.random()*40,y:y-10,vx:(Math.random()-.5),vy:-1,life:40,col:'#FF5CC8',g:-0.01,heart:true})}
   if(G.P.rush>0){const ox=x+20+G.P.face*62,oy=y+40,R=60;ctx.fillStyle='#2FA6D4';ctx.beginPath();ctx.arc(ox,oy,R,0,7);ctx.fill();ctx.fillStyle='#7FD8F0';ctx.beginPath();ctx.arc(ox,oy,R-5,0,7);ctx.fill();ctx.fillStyle='#C6F4FC';ctx.beginPath();ctx.arc(ox,oy,R-22,0,7);ctx.fill();ctx.fillStyle='#FFFFFF';ctx.beginPath();ctx.arc(ox,oy,15,0,7);ctx.fill();
