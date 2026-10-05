@@ -4,6 +4,7 @@ import { reset, show } from './game.js';
 import { step } from './physics.js';
 import { draw } from './render.js';
 import { initHero, heroReady, heroAnimFor, analyzeSheet } from './hero.js';
+import { initAudio, initMuteButton, startMusic, toggleMute, isMuted } from './audio.js';
 import { startBtn } from './state.js';
 
 addEventListener('keydown',e=>{const k=map(e.key);if(k){if(!keys[k])pressed[k]=true;keys[k]=true;e.preventDefault()}});
@@ -16,12 +17,14 @@ document.querySelectorAll('.k').forEach(b=>{const k=b.dataset.k;
 
 function loop(){if(G.running){try{step();draw()}catch(err){console.error(err);ctx.fillStyle='#f00';ctx.font='12px monospace';ctx.fillText('ERR '+err.message,10,CH-20)}}requestAnimationFrame(loop)}
 G.running = false;
-startBtn.onclick = () => { reset(true); show(false); G.running = true };
+startBtn.onclick = () => { initAudio(); startMusic(); reset(true); show(false); G.running = true };
 
 // Modo pruebas: handle para inspeccionar el estado y avanzar fotogramas a mano
 // (util cuando la pestana esta oculta y requestAnimationFrame se pausa).
 window.KAGE = { G, keys, pressed, released, step, draw, heroReady, heroAnimFor, analyzeSheet,
+  toggleMute, isMuted,
   tick(n = 1) { for (let i = 0; i < n; i++) { step(); draw(); } } };
 
 initHero();
+initMuteButton();
 reset(true); draw(); loop();

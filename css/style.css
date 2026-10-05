@@ -39,3 +39,11 @@ button:focus-visible{outline:3px solid var(--chakra);outline-offset:3px}
 .tip{font-size:12px;color:var(--muted);font-weight:600;text-align:center;max-width:70ch}
 #flash{position:absolute;inset:0;pointer-events:none;background:#fff;opacity:0;transition:opacity .35s}
 @media (prefers-reduced-motion:reduce){#flash{transition:none}}
+
+/* Boton de silencio, dentro del marco para que tambien se vea en movil */
+#mute{position:absolute;top:8px;right:8px;z-index:5;width:44px;min-height:44px;height:44px;
+  font-family:var(--body);font-size:20px;line-height:1;padding:0;border-radius:50%;
+  background:#0008;color:#fff;border:2px solid #fff5;box-shadow:none;cursor:pointer;
+  backdrop-filter:blur(2px)}
+#mute:active{transform:translateY(2px);box-shadow:none}
+#mute:focus-visible{outline:3px solid var(--chakra);outline-offset:2px}

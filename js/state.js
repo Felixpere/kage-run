@@ -29,5 +29,5 @@ export const G = {
   clones:[], chakra:0, shake:0, debris:[], summon:null, solidsLive:[], fallen:[],
   craters:[], items:[], beam:null, charge:0, runT:0, snakes:[], mortars:[],
   shots:[], scorch:[], mounds:[], henge:0, orbHold:0, charging:false,
-  god:true, showHud:true, ring:null,
+  god:true, showHud:true, ring:null, fx:[],
 };

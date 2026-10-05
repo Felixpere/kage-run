@@ -5,6 +5,7 @@ import { NINJAS, HENGE, DANCER, ONI, ONI2, KAPPA, SHELL, SNAKE, MORTAR, LANTERN,
          GROUND2, DIRT2, BLOCK2, FROG, ONIGIRI_IMG, SCROLL_IMG } from './sprites.js';
 import { dust } from './fx.js';
 import { drawHero } from './hero.js';
+import { drawMon, monListo, drawFX, drawAura, MON_PERFIL, MON_FRENTE } from './packfx.js';
 
 function drawBamboo(x,y,w,h){const g=ctx.createLinearGradient(x,0,x+w,0);g.addColorStop(0,'#1a7a28');g.addColorStop(0.25,'#35C94A');g.addColorStop(0.55,'#239F32');g.addColorStop(1,'#0F5C1C');ctx.fillStyle=g;ctx.fillRect(x,y,w,h);ctx.fillStyle='#2B1A10';ctx.fillRect(x-1,y,1,h);ctx.fillRect(x+w,y,1,h);ctx.fillStyle='#45d85a';ctx.fillRect(x,y,w,6);ctx.fillStyle='#0F5C1C';ctx.fillRect(x,y+6,w,3);ctx.fillStyle='#2B1A10';ctx.fillRect(x+Math.round(w/2)-2,y+16,4,h-22);ctx.fillStyle='#0F5C1C';for(let yy=y+40;yy<y+h-10;yy+=36)ctx.fillRect(x+4,yy,w-8,2)}
 function glow(x,y,r,col){const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,col+'ff');g.addColorStop(0.5,col+'88');g.addColorStop(1,col+'00');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill()}
@@ -25,16 +26,16 @@ function draw(){
   for(const c of G.craters){ctx.fillStyle='#b06a2a';ctx.beginPath();ctx.ellipse(c.x,c.y,22,7,0,0,7);ctx.fill();ctx.fillStyle='#5a2a08';ctx.beginPath();ctx.ellipse(c.x,c.y+1,14,4,0,0,7);ctx.fill()}
   for(const m of G.mounds){ctx.fillStyle='#c27a3a';ctx.beginPath();ctx.ellipse(m.x,m.y,18,9,0,Math.PI,0);ctx.fill();ctx.fillStyle='#8a4a1a';ctx.fillRect(m.x-6,m.y-7,5,4);ctx.fillRect(m.x+4,m.y-5,4,3)}
   for(const s of G.scorch){ctx.globalAlpha=Math.min(1,s.life/300)*0.7;ctx.fillStyle='#3a1c0a';ctx.fillRect(s.x-10,s.y-3,20,4);ctx.globalAlpha=1}
-  for(const sn of G.snakes){if(sn.dead||!sn.pipe||sn.up<=0)continue;const hgt=sn.up*42;ctx.save();ctx.beginPath();ctx.rect(sn.x-4,sn.pipe.y-hgt-2,sn.w+8,hgt+2);ctx.clip();ctx.drawImage(SNAKE,sn.x,sn.pipe.y-hgt);ctx.restore()}
+  for(const sn of G.snakes){if(sn.dead||!sn.pipe||sn.up<=0)continue;const hgt=sn.up*42;ctx.save();ctx.beginPath();ctx.rect(sn.x-4,sn.pipe.y-hgt-2,sn.w+8,hgt+2);ctx.clip();if(!drawMon('snake',sn.x,sn.pipe.y-hgt,42,42,Math.floor(G.t/10),MON_PERFIL,false))ctx.drawImage(SNAKE,sn.x,sn.pipe.y-hgt);ctx.restore()}
   for(const s of G.solidsLive){if(s.x+s.w<G.cam||s.x>G.cam+VW)continue;
-    if(s.t==='g')ctx.drawImage(s.y>=H-TILE?DIRT2:GROUND2,s.x,s.y);else if(s.t==='b')ctx.drawImage(BLOCK2,s.x,s.y);else if(s.t==='l')ctx.drawImage(LANTERN,s.x,s.y);else if(s.t==='u')ctx.drawImage(USED,s.x,s.y);else drawBamboo(s.x+6,s.y,s.w-12,s.h)}
+    if(s.t==='g')ctx.drawImage(s.y>=H-TILE?DIRT2:GROUND2,s.x,s.y);else if(s.t==='b')ctx.drawImage(BLOCK2,s.x,s.y);else if(s.t==='l'){if(!drawMon('lantern',s.x,s.y,TILE,TILE,Math.floor(G.t/14),MON_FRENTE,false))ctx.drawImage(LANTERN,s.x,s.y)}else if(s.t==='u')ctx.drawImage(USED,s.x,s.y);else drawBamboo(s.x+6,s.y,s.w-12,s.h)}
   for(const m of G.mortars){if(!m.alive)continue;ctx.drawImage(MORTAR,m.x,m.y);if(m.hp<2){ctx.fillStyle='#3a3f4a';ctx.fillRect(m.x+10,m.y+14,4,12);ctx.fillRect(m.x+22,m.y+22,10,3)}}
   if(goal){const g=goal;ctx.fillStyle='#c42b24';ctx.fillRect(g.x-2,g.y+14,12,g.h-14);ctx.fillRect(g.x+g.w-10,g.y+14,12,g.h-14);ctx.fillStyle='#1b1b2a';ctx.fillRect(g.x-20,g.y,g.w+40,8);ctx.fillStyle='#c42b24';ctx.fillRect(g.x-16,g.y+8,g.w+32,10);ctx.fillRect(g.x-6,g.y+30,g.w+12,8);ctx.fillStyle='#ffd166';ctx.fillRect(g.x+g.w/2-8,g.y+18,16,12)}
   for(const s of G.scrolls){if(s.got)continue;ctx.imageSmoothingEnabled=false;ctx.drawImage(SCROLL_IMG,s.x-8,s.y-4+Math.sin(G.t/12)*4,42,42)}
   for(const it of G.items){ctx.imageSmoothingEnabled=false;ctx.drawImage(ONIGIRI_IMG,it.x-5,it.y-10,36,36)}
   for(const c of G.coins){const w=Math.abs(Math.cos(c.ph))*16+3;ctx.fillStyle='#6B4408';ctx.fillRect(c.x-w/2-1,c.y-9,w+2,18);ctx.fillStyle='#F2D45C';ctx.fillRect(c.x-w/2,c.y-8,w,16);ctx.fillStyle='#D9A227';ctx.fillRect(c.x-w/2+2,c.y-4,Math.max(1,w-4),8)}
   for(const sh of G.shots){ctx.fillStyle='#2a2f45';ctx.beginPath();ctx.arc(sh.x+8,sh.y+8,8,0,7);ctx.fill();ctx.fillStyle='#ff8c1a';ctx.fillRect(sh.x+4,sh.y-6,3,6)}
-  for(const e of G.enemies){if(!e.alive)continue;let sp=e.kind==='kappa'?KAPPA:e.kind==='shell'?SHELL:(Math.floor(G.t/10)%2?ONI:ONI2);ctx.save();
+  for(const e of G.enemies){if(!e.alive)continue;if(e.kind==='kappa'&&!e.dead&&monListo('kappa')){drawMon('kappa',e.x,e.y,e.w,e.h,Math.floor(G.t/9),MON_PERFIL,e.vx>0);continue}let sp=e.kind==='kappa'?KAPPA:e.kind==='shell'?SHELL:(Math.floor(G.t/10)%2?ONI:ONI2);ctx.save();
     if(e.dead&&e.squash){ctx.globalAlpha=Math.min(1,e.dead/40);ctx.translate(e.x,e.y+e.h-15);ctx.scale(1,0.38);ctx.drawImage(sp,0,0);ctx.globalAlpha=1}
     else if(e.dead){ctx.translate(e.x+21,e.y+20);ctx.rotate(e.dead*0.3);ctx.drawImage(sp,-21,-20)}
     else if(e.kind==='shell'&&e.rolling){ctx.translate(e.x+21,e.y+13);ctx.rotate(G.t*0.5*(e.vx>0?1:-1));ctx.drawImage(sp,-21,-13)}
@@ -50,6 +51,7 @@ function draw(){
     ctx.strokeStyle='#FFF6D0';ctx.lineWidth=5;for(let k=1;k<=4;k++){ctx.beginPath();ctx.ellipse(0,0,(180+k*14)*prog,(60+k*14)*prog,0,-Math.PI*0.45,Math.PI*0.45);ctx.stroke()}ctx.restore()}
   
   if(!(G.P.inv>0&&G.P.aura<=0&&G.charge<=0&&G.henge<=0&&G.P.rush<=0&&Math.floor(G.t/4)%2))drawPlayer();
+  for(const e of G.fx)drawFX(e);
   for(const p of G.particles){ctx.globalAlpha=Math.min(1,p.life/25);ctx.fillStyle=p.col;if(p.heart){ctx.fillRect(p.x-6,p.y,4,4);ctx.fillRect(p.x+2,p.y,4,4);ctx.fillRect(p.x-8,p.y+4,16,4);ctx.fillRect(p.x-6,p.y+8,12,4);ctx.fillRect(p.x-4,p.y+12,8,4);ctx.fillRect(p.x-2,p.y+16,4,4)}else ctx.fillRect(p.x,p.y,5,5)}ctx.globalAlpha=1;
   ctx.restore();
   if(G.showHud){ctx.font='14px "Press Start 2P",monospace';ctx.textBaseline='top';
@@ -73,7 +75,7 @@ function drawPlayer(){
   const F=FORMS[G.form],set=G.sexy>0?DANCER:G.henge>0?HENGE:NINJAS[G.form],col=G.sexy>0?'#FF5CC8':G.henge>0?'#FF5CC8':F.col;
   let sp=set.idle;if(G.sexy>0)sp=Math.floor(G.t/10)%2?set.charge:set.idle;else if(G.charge>0||G.charging)sp=set.charge;else if(G.P.kick>0||G.P.flyKick>0)sp=set.kick;else if(!G.P.ground)sp=set.jump;else if(Math.abs(G.P.vx)>0.5)sp=Math.floor(G.t/(Math.abs(G.P.vx)>4?4:7))%2?set.run1:set.run2;
   const x=Math.round(G.P.x),y=Math.round(G.P.y);
-  if(G.P.aura>0||G.form>=2||G.charge>0||G.charging||G.henge>0){const r=G.charge>0?36+((50-G.charge)/50)*50:G.charging?50+Math.sin(G.t/3)*8:56+Math.sin(G.t/4)*5;glow(x+20,y+45,r,col)}
+  if(G.P.aura>0||G.form>=2||G.charge>0||G.charging||G.henge>0){const r=G.charge>0?36+((50-G.charge)/50)*50:G.charging?50+Math.sin(G.t/3)*8:56+Math.sin(G.t/4)*5;glow(x+20,y+45,r,col);drawAura(x+20,y+90,3.2,G.t)}
   if(G.form===3&&G.henge<=0){ctx.fillStyle='#ffd34a';for(let i=0;i<3;i++){const a=G.t/6+i*2.1;ctx.fillRect(x+20-G.P.face*56+Math.cos(a)*10-4,y+56+Math.sin(a)*12+i*6,8,8)}}
   if(!G.P.ground&&G.P.vy<2&&G.P.vy>-6){ctx.strokeStyle=col+'aa';ctx.lineWidth=3;ctx.lineWidth=5;ctx.beginPath();ctx.arc(x+20-G.P.face*36,y+80,46,G.P.face>0?Math.PI*1.1:Math.PI*1.6,G.P.face>0?Math.PI*1.45:Math.PI*1.95);ctx.stroke()}
   ctx.fillStyle=col;ctx.fillRect(x+(G.P.face>0?-26:40),y+16+Math.sin(G.t/5)*3,26,5);ctx.fillRect(x+(G.P.face>0?-22:38),y+24+Math.cos(G.t/5)*3,22,5);

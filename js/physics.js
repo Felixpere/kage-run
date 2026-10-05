@@ -1,16 +1,17 @@
 // Fisica, entrada de juego, colisiones, poderes y enemigos.
 import { G, keys, pressed, released, FORMS, W, CH, H, TILE, VW, VH, CAMY } from './state.js';
 import { COLS, goal } from './level.js';
-import { burst, dust, doFlash, hitstop, crater, updateFX } from './fx.js';
+import { burst, dust, doFlash, hitstop, crater, updateFX, spawnFX } from './fx.js';
+import { sfx } from './audio.js';
 import { evolve, loseLife, hurt, end } from './game.js';
 
 function hit(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y}
-function killEnemy(e,kx){if(e.dead)return;e.dead=40;e.kx=kx;e.ky=-7;e.squash=false;burst(e.x+20,e.y+20,'#ff3b5c',20);G.shake=Math.max(G.shake,4)}
-function killMortar(m){m.alive=false;G.score+=300;burst(m.x+20,m.y+20,'#6b7280',30,10);G.shake=6}
+function killEnemy(e,kx){if(e.dead)return;e.dead=40;e.kx=kx;e.ky=-7;e.squash=false;burst(e.x+20,e.y+20,'#ff3b5c',20);spawnFX('explosion',e.x+21,e.y+20,1.6);sfx('golpe');G.shake=Math.max(G.shake,4)}
+function killMortar(m){m.alive=false;G.score+=300;burst(m.x+20,m.y+20,'#6b7280',30,10);spawnFX('explosion',m.x+20,m.y+20,2.2);sfx('explosion');G.shake=6}
 function bump(s){if(s.t==='b')breakBlock(s,0);
-  else if(s.t==='l'){s.t='u';G.chakra=Math.min(100,G.chakra+20);G.score+=50;G.shake=3;burst(s.x+24,s.y-6,'#ffd166',14);G.items.push({x:s.x+10,y:s.y-30,vx:G.P.face*1.6,vy:-4,w:26,h:26,life:600});for(let k=0;k<9;k++)G.coins.push({x:s.x+24,y:s.y-4,vx:(Math.random()-.5)*5,vy:-7-Math.random()*4,life:90,ph:Math.random()*4})}
+  else if(s.t==='l'){s.t='u';sfx('moneda');G.chakra=Math.min(100,G.chakra+20);G.score+=50;G.shake=3;burst(s.x+24,s.y-6,'#ffd166',14);G.items.push({x:s.x+10,y:s.y-30,vx:G.P.face*1.6,vy:-4,w:26,h:26,life:600});for(let k=0;k<9;k++)G.coins.push({x:s.x+24,y:s.y-4,vx:(Math.random()-.5)*5,vy:-7-Math.random()*4,life:90,ph:Math.random()*4})}
   else G.shake=Math.max(G.shake,1)}
-function breakBlock(s,dir){const i=G.solidsLive.indexOf(s);if(i<0)return;G.score+=50;G.shake=Math.max(G.shake,s.t==='p'?8:5);dir=dir||1;
+function breakBlock(s,dir){const i=G.solidsLive.indexOf(s);if(i<0)return;G.score+=50;sfx('romper');spawnFX('chispa',s.x+s.w/2,s.y+s.h/2,1.4);G.shake=Math.max(G.shake,s.t==='p'?8:5);dir=dir||1;
   if(s.t==='p'){G.solidsLive.splice(i,1);for(const sn of G.snakes)if(sn.pipe===s)sn.dead=true;
     hitstop(10);if(s.stump||Math.random()<0.5){G.fallen.push({x:s.x,y:s.y,w:s.w,h:s.h,dir,a:0});crater(s.x+s.w/2+dir*30,s.y+s.h)}
     else{G.solidsLive.push({x:s.x,y:s.y+TILE,w:s.w,h:TILE,t:'p',stump:true});for(let k=0;k<3;k++)G.debris.push({x:s.x+k*20,y:s.y+10,vx:dir*(3+k),vy:-6-k,rot:0,vr:0.15,life:80,col:'#3f9a3b',sz:22,bamboo:true})}
@@ -42,16 +43,16 @@ function step(){
   else if(G.P.flyKick>0){G.P.flyKick--}
   else{if(ax){G.P.face=ax;G.P.vx+=(ax*maxv-G.P.vx)*0.5}else{G.P.vx=G.P.ground?0:G.P.vx*0.9}}
   if(sprint&&G.P.ground&&G.t%7==0)dust(G.P.x+(G.P.face>0?-6:44),G.P.y+90,3);
-  if(pressed.jump&&G.charge<=0&&!G.charging&&G.sexy<=0){const maxJ=G.form>=1?2:1;if(G.P.ground||G.P.jumps<maxJ){G.P.vy=F.jump*(G.P.jumps?0.85:1);G.P.jumps++;G.P.ground=false;dust(G.P.x+20,G.P.y+90,G.P.jumps>1?0:6);if(G.P.jumps>1)burst(G.P.x+20,G.P.y+90,'#3ee6ff',12)}}
+  if(pressed.jump&&G.charge<=0&&!G.charging&&G.sexy<=0){const maxJ=G.form>=1?2:1;if(G.P.ground||G.P.jumps<maxJ){G.P.vy=F.jump*(G.P.jumps?0.85:1);G.P.jumps++;G.P.ground=false;sfx('salto');dust(G.P.x+20,G.P.y+90,G.P.jumps>1?0:6);if(G.P.jumps>1)burst(G.P.x+20,G.P.y+90,'#3ee6ff',12)}}
   if(!keys.jump&&G.P.vy<-10)G.P.vy=-10;
-  if(pressed.kick&&G.P.kickCd<=0&&G.charge<=0){G.P.kick=12;G.P.kickCd=20;if(!G.P.ground){G.P.flyKick=14;G.P.vx=G.P.face*7;G.P.vy=4}}
+  if(pressed.kick&&G.P.kickCd<=0&&G.charge<=0){G.P.kick=12;G.P.kickCd=20;sfx('tajo');if(!G.P.ground){G.P.flyKick=14;G.P.vx=G.P.face*7;G.P.vy=4}}
   if(pressed.dash&&G.form>=2&&G.P.dashCd<=0){G.P.dash=12;G.P.dashCd=40;G.P.inv=Math.max(G.P.inv,13)}
-  if(pressed.clone&&G.form>=1&&G.chakra>=35){G.chakra-=35;G.clones.push({x:G.P.x,y:G.P.y,vx:3.5,life:130},{x:G.P.x,y:G.P.y,vx:-3.5,life:130});burst(G.P.x+20,G.P.y+45,'#ffffff',40)}
-  if(pressed.henge&&G.form>=1&&G.chakra>=30&&G.henge<=0){G.chakra-=30;G.henge=300;for(let i=0;i<30;i++)G.particles.push({x:G.P.x+Math.random()*40,y:G.P.y+Math.random()*90,vx:(Math.random()-.5)*2,vy:-2-Math.random()*3,life:40,col:'#FFFFFF',g:-0.02});hitstop(12)}
-  if(pressed.sexy&&G.form>=1&&G.chakra>=30&&G.sexy<=0){G.chakra-=30;G.sexy=180;G.P.vx=0;for(let i=0;i<30;i++)G.particles.push({x:G.P.x+Math.random()*40,y:G.P.y+Math.random()*90,vx:(Math.random()-.5)*2,vy:-2-Math.random()*3,life:40,col:'#FFFFFF',g:-0.02});hitstop(10);
+  if(pressed.clone&&G.form>=1&&G.chakra>=35){G.chakra-=35;sfx('magia');spawnFX('humo',G.P.x+20,G.P.y+45,3);G.clones.push({x:G.P.x,y:G.P.y,vx:3.5,life:130},{x:G.P.x,y:G.P.y,vx:-3.5,life:130});burst(G.P.x+20,G.P.y+45,'#ffffff',40)}
+  if(pressed.henge&&G.form>=1&&G.chakra>=30&&G.henge<=0){G.chakra-=30;G.henge=300;sfx('magia');spawnFX('humo',G.P.x+20,G.P.y+45,3);for(let i=0;i<30;i++)G.particles.push({x:G.P.x+Math.random()*40,y:G.P.y+Math.random()*90,vx:(Math.random()-.5)*2,vy:-2-Math.random()*3,life:40,col:'#FFFFFF',g:-0.02});hitstop(12)}
+  if(pressed.sexy&&G.form>=1&&G.chakra>=30&&G.sexy<=0){G.chakra-=30;G.sexy=180;G.P.vx=0;sfx('magia');spawnFX('humo',G.P.x+20,G.P.y+45,3);for(let i=0;i<30;i++)G.particles.push({x:G.P.x+Math.random()*40,y:G.P.y+Math.random()*90,vx:(Math.random()-.5)*2,vy:-2-Math.random()*3,life:40,col:'#FFFFFF',g:-0.02});hitstop(10);
     for(const e of G.enemies)if(e.alive&&!e.dead&&e.kind!=='shell'&&Math.abs(e.x-G.P.x)<520&&Math.abs(e.y-G.P.y)<200){e.stun=300;e.vx=Math.sign(G.P.x-e.x)*0.001||0.001}}
-  if(pressed.summon&&G.form>=2&&G.chakra>=60&&!G.summon){G.chakra-=60;G.summon={x:G.cam-600,y:H-2*TILE-440,vx:9,life:360,stage:0,wait:0};G.shake=12;hitstop(45)}
-  if(pressed.beam&&G.form>=3&&G.chakra>=50&&!G.beam){G.chakra-=50;G.beam={x:G.P.x+20,y:G.P.y+45,dir:G.P.face,life:20,w:0};G.shake=14;doFlash(.6,240);G.P.vx=0;hitstop(10)}
+  if(pressed.summon&&G.form>=2&&G.chakra>=60&&!G.summon){G.chakra-=60;sfx('invocar');spawnFX('humo',G.P.x+20,G.P.y+45,6);G.summon={x:G.cam-600,y:H-2*TILE-440,vx:9,life:360,stage:0,wait:0};G.shake=12;hitstop(45)}
+  if(pressed.beam&&G.form>=3&&G.chakra>=50&&!G.beam){G.chakra-=50;sfx('magia');G.beam={x:G.P.x+20,y:G.P.y+45,dir:G.P.face,life:20,w:0};G.shake=14;doFlash(.6,240);G.P.vx=0;hitstop(10)}
   for(const k in pressed)pressed[k]=false;for(const k in released)released[k]=false;
   if(G.chakra<100)G.chakra+=0.05;
   if(G.sexy>0)G.sexy--;if(G.P.kick>0)G.P.kick--;if(G.P.kickCd>0)G.P.kickCd--;if(G.P.dashCd>0)G.P.dashCd--;if(G.P.inv>0)G.P.inv--;if(G.P.aura>0)G.P.aura--;if(G.P.land>0)G.P.land--;if(G.P.hurtT>0)G.P.hurtT--;if(G.henge>0)G.henge--;
@@ -75,10 +76,10 @@ function step(){
     for(const sh of G.shots)if(hit(hb,sh)){sh.life=0;burst(sh.x,sh.y,'#555',10)}
     for(const sn of G.snakes)if(!sn.dead&&sn.up>0.5&&hit(hb,{x:sn.x,y:sn.pipe.y-sn.up*40,w:sn.w,h:sn.up*40})){sn.dead=true;G.score+=200;burst(sn.x+20,sn.pipe.y-20,'#4ccf5e',20)}}
   // ---- G.scrolls
-  for(const s of G.scrolls)if(!s.got&&hit(G.P,s)){s.got=true;G.gotCount++;G.score+=100;G.chakra=Math.min(100,G.chakra+25);burst(s.x+12,s.y+16,'#ffe066',20);if(G.gotCount%3==0)evolve();G.shake=2}
+  for(const s of G.scrolls)if(!s.got&&hit(G.P,s)){s.got=true;G.gotCount++;G.score+=100;sfx('pergamino');G.chakra=Math.min(100,G.chakra+25);burst(s.x+12,s.y+16,'#ffe066',20);if(G.gotCount%3==0)evolve();G.shake=2}
   // ---- G.items
   for(const it of G.items){it.life--;it.vy+=0.5;it.x+=it.vx;it.y+=it.vy;for(const s of G.solidsLive)if(hit(it,s)){if(it.vy>0&&it.y+it.h-s.y<16){it.y=s.y-it.h;it.vy=0}else{it.vx*=-1;it.x+=it.vx*2}}
-    if(hit(G.P,it)){it.life=0;if(G.lives<5)G.lives++;G.score+=300;burst(it.x+13,it.y+13,'#ffffff',20)}}
+    if(hit(G.P,it)){it.life=0;if(G.lives<5)G.lives++;G.score+=300;sfx('vida');burst(it.x+13,it.y+13,'#ffffff',20)}}
   G.items=G.items.filter(i=>i.life>0&&i.y<H+60);
   // ---- G.enemies (with gravity)
   const passThrough=G.form>=2||G.P.dash>0||G.henge>0||(G.P.inv>0&&G.P.aura>0);
@@ -98,7 +99,7 @@ function step(){
     if(onG){e.x+=e.vx;for(const s of G.solidsLive)if(hit(e,s)&&e.y+e.h>s.y+6){e.vx*=-1;e.x+=e.vx*2;break}
       if(e.plat){const ahead={x:e.x+(e.vx>0?e.w:-4),y:e.y+e.h+2,w:4,h:4};let has=false;for(const s of G.solidsLive)if(hit(ahead,s)){has=true;break}if(!has)e.vx*=-1}}
     if(e.y>H+80){e.alive=false;continue}
-    if(hit(G.P,e)){if(G.P.vy>0&&G.P.y+G.P.h-e.y<28){if(e.kind==='kappa'){e.kind='shell';e.h=26;e.y+=13;e.vx=0;e.rolling=false;G.P.vy=keys.jump?-9:-6;G.score+=100;burst(e.x+20,e.y,'#3aa94c',16)}else{e.dead=240;e.squash=true;G.P.vy=keys.jump?-9:-6;G.score+=200;burst(e.x+20,e.y+20,'#8b5a2b',25);G.shake=3}}
+    if(hit(G.P,e)){if(G.P.vy>0&&G.P.y+G.P.h-e.y<28){if(e.kind==='kappa'){e.kind='shell';e.h=26;e.y+=13;e.vx=0;e.rolling=false;G.P.vy=keys.jump?-9:-6;G.score+=100;burst(e.x+20,e.y,'#3aa94c',16)}else{e.dead=240;e.squash=true;G.P.vy=keys.jump?-9:-6;G.score+=200;sfx('rebote');burst(e.x+20,e.y+20,'#8b5a2b',25);G.shake=3}}
       else if(passThrough){killEnemy(e,G.P.face*5);G.score+=200}
       else hurt()}}
   // ---- G.snakes in bamboo
