@@ -4,9 +4,19 @@ Plataformero 2D de scroll lateral en HTML5 Canvas, hecho por diversión por Fél
 Inspirado en el *look & feel* de un reel ("ninja en un mundo de plataformas clásico"), pero **todo el arte y los personajes son originales**: nada de personajes, enemigos, bloques "?", tuberías con reborde, setas ni logotipos de franquicias existentes. Si algo se parece demasiado, cambiarlo.
 
 ## Estado actual
-- Un solo archivo `index.html` (~60 KB) con CSS, JS y sprites incrustados (algunos en base64).
-- Funciona abriéndolo en el navegador. Móvil: controles táctiles en pantalla.
-- Pendiente inmediato: separar en `index.html`, `css/`, `js/` (`level.js`, `physics.js`, `render.js`, `fx.js`, `sprites.js`) y carpeta `assets/`.
+- Separado en `index.html` (3 KB, solo marcado), `css/style.css` y diez módulos ES en `js/`:
+  `state.js` (constantes, DOM, entrada y el objeto `G` con todo el estado mutable),
+  `level.js`, `sprites.js` (pixel art en código), `packfx.js` (sprites del pack),
+  `hero.js` (motor de hojas del héroe), `fx.js`, `audio.js`, `game.js`, `physics.js`,
+  `render.js`, `main.js`.
+- Al ser módulos ES ya **no funciona con doble clic** (file://): hay que servir la carpeta.
+  `python -m http.server 8000` y abrir `http://127.0.0.1:8000`.
+- Assets en `assets/`: los sprites que iban en base64 como PNG sueltos, y el pack
+  "Ninja Adventure" completo en `assets/pack/`.
+- Botón de silencio en el marco; estado en `localStorage` bajo `kage.mute`.
+- Handle de pruebas en consola: `window.KAGE` ({G, keys, pressed, released, step, draw,
+  tick(n), heroReady, heroAnimFor, analyzeSheet, toggleMute, isMuted}). `tick(n)` avanza
+  n fotogramas a mano, útil porque `requestAnimationFrame` se pausa con la pestaña oculta.
 
 ## Referencia medida del reel (brief DESIGN_BRIEF.md si existe)
 - Viewport 2:1 (960×480), suelo al 85 % de la altura, héroe ≈ 17,5 % de la altura (90 px).
@@ -47,11 +57,19 @@ Todo lo flotante debe dejar ≥ 2 tiles (96 px) de hueco bajo él: el héroe mid
 - Sapo gigante, onigiri y pergamino: pack "Ninja Adventure" de pixel-boy (CC0), carpeta del pack en disco. Reutilizar también sus FX (aura, explosión, humo), monstruos (kappa, serpiente, bambú, farolillo) y audio.
 
 ## Pendientes (por prioridad)
-1. Separar el archivo en módulos y cargar sprites desde `assets/` en vez de base64.
-2. Motor de hojas de sprites para el héroe (animaciones por fila, flip horizontal, anclaje en los pies).
-3. Sustituir enemigos por sprites del pack (kappa, serpiente, bambú, farolillo) y FX del pack.
-4. Música y sonidos del pack (salto, golpe, explosión, jingle de evolución).
-5. Quitar modo pruebas (teclas 1-4, vidas ∞) para la versión final.
+1. **Faltan las hojas del héroe.** `assets/kage_f1..f4.png` y `kage_distraccion.png` no
+   están en el equipo (ver `assets/FALTA.md`). El motor ya las carga y detecta solo los
+   fotogramas por fila; en cuanto se dejen en `assets/` o `assets/sprites/` entran sin
+   tocar código. Mientras tanto se usa el sprite dibujado en código.
+2. Recortar `assets/pack/Audio` (95 MB) a lo que de verdad suena.
+3. Quitar modo pruebas (teclas 1-4, vidas ∞, `window.KAGE`) para la versión final.
+
+## Hecho
+- Separación en módulos y assets fuera del HTML.
+- Motor de hojas de sprites del héroe (`js/hero.js`).
+- Enemigos y efectos del pack: kappa, serpiente, farolillo, humo, explosión, chispa y aura.
+  El oni y el caparazón siguen en código (el pack no trae equivalente y son arte propio).
+- Música y sonidos del pack con botón de silencio.
 
 ## Estilo de trabajo
 - Español, directo, sin relleno.
