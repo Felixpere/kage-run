@@ -69,8 +69,10 @@ Mapa del nivel en `js/level.js`: `#` suelo, `=` piedra, `L` bloque dorado,
 Autor: Félix Pérez Acevedo.
 
 ## Créditos de arte
-- Sapo gigante (invocación), onigiri, pergamino, kappa, serpiente, farolillo y los
-  efectos de humo, explosión, chispa y aura: "Ninja Adventure" asset pack de
-  pixel-boy (licencia CC0). También la música y los sonidos.
+- Héroe (cuatro formas y distracción) y sapo de la invocación: hojas propias del
+  proyecto, en `assets/`. Ver `assets/README.md` para la rejilla de cada una.
+- Onigiri, pergamino, kappa, serpiente, farolillo y los efectos de humo, explosión,
+  chispa y aura: "Ninja Adventure" asset pack de pixel-boy (licencia CC0). También
+  la música y los sonidos.
 - Oni, caparazón, mortero, tiles, bambúes, fondo y HUD: dibujados en código para
   este proyecto.

@@ -6,6 +6,7 @@ import { NINJAS, HENGE, DANCER, ONI, ONI2, KAPPA, SHELL, SNAKE, MORTAR, LANTERN,
 import { dust } from './fx.js';
 import { drawHero } from './hero.js';
 import { drawMon, monListo, drawFX, drawAura, MON_PERFIL, MON_FRENTE } from './packfx.js';
+import { drawSapo } from './summon.js';
 
 function drawBamboo(x,y,w,h){const g=ctx.createLinearGradient(x,0,x+w,0);g.addColorStop(0,'#1a7a28');g.addColorStop(0.25,'#35C94A');g.addColorStop(0.55,'#239F32');g.addColorStop(1,'#0F5C1C');ctx.fillStyle=g;ctx.fillRect(x,y,w,h);ctx.fillStyle='#2B1A10';ctx.fillRect(x-1,y,1,h);ctx.fillRect(x+w,y,1,h);ctx.fillStyle='#45d85a';ctx.fillRect(x,y,w,6);ctx.fillStyle='#0F5C1C';ctx.fillRect(x,y+6,w,3);ctx.fillStyle='#2B1A10';ctx.fillRect(x+Math.round(w/2)-2,y+16,4,h-22);ctx.fillStyle='#0F5C1C';for(let yy=y+40;yy<y+h-10;yy+=36)ctx.fillRect(x+4,yy,w-8,2)}
 function glow(x,y,r,col){const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,col+'ff');g.addColorStop(0.5,col+'88');g.addColorStop(1,col+'00');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill()}
@@ -42,7 +43,9 @@ function draw(){
     else if(e.vx>0){ctx.translate(e.x+e.w,e.y);ctx.scale(-1,1);ctx.drawImage(sp,0,0)}else ctx.drawImage(sp,e.x,e.y);ctx.restore()}
   for(const d of G.debris){ctx.save();ctx.translate(d.x,d.y);ctx.rotate(d.rot);if(d.bamboo){drawBamboo(-d.sz/2,-d.sz,d.sz,d.sz*2)}else{ctx.fillStyle=d.col;ctx.fillRect(-d.sz/2,-d.sz/2,d.sz,d.sz)}ctx.restore()}
   if(G.summon){const sc=11,fw=40*sc;const sheet=G.summon.stage===0?FROG.jump:G.summon.stage===1?FROG.idle:FROG.attack;const nf=sheet.width/40||1;const fr=Math.floor(G.t/(G.summon.stage===2?5:9))%nf;
-    ctx.save();ctx.imageSmoothingEnabled=false;ctx.translate(G.summon.x+290,H-2*TILE);if(G.summon.vx<0||false){}ctx.drawImage(sheet,fr*40,0,40,40,-fw/2,-fw,fw,fw);ctx.restore();
+    const propio=drawSapo(G.summon.x+290,H-2*TILE,G.summon.stage,G.t,G.summon.life<48);
+    if(!propio){
+    ctx.save();ctx.imageSmoothingEnabled=false;ctx.translate(G.summon.x+290,H-2*TILE);if(G.summon.vx<0||false){}ctx.drawImage(sheet,fr*40,0,40,40,-fw/2,-fw,fw,fw);ctx.restore();}
     if(G.summon.stage===2&&G.t%2==0)dust(G.summon.x+200+Math.random()*200,H-2*TILE,2)}
   for(const c of G.clones){ctx.globalAlpha=0.6+0.3*Math.sin(G.t/3);ctx.save();if(c.vx<0){ctx.translate(c.x+60,c.y);ctx.scale(-1,1);ctx.drawImage(NINJAS[G.form].run1,0,0)}else ctx.drawImage(Math.floor(G.t/6)%2?NINJAS[G.form].run1:NINJAS[G.form].run2,c.x,c.y);ctx.restore();ctx.globalAlpha=1}
   if(G.beam){const a=Math.min(1,G.beam.life/8);ctx.save();ctx.globalAlpha=a*0.9;ctx.translate(G.beam.x,G.beam.y);ctx.scale(G.beam.dir,1);ctx.rotate(-0.5);

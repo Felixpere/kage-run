@@ -53,20 +53,27 @@ Todo lo flotante debe dejar ≥ 2 tiles (96 px) de hueco bajo él: el héroe mid
 
 ## Arte
 - Fondos, tiles, estructuras y arbustos: dibujados en Canvas en alta resolución (curvas suaves).
-- Héroe y enemigos: sprites pixel provisionales dibujados en código. **Sustituir** por la hoja de sprites del ninja generada en Claude Design (celdas 64×72, filas: idle 4, correr 8, sprint 6, salto 2/1/2, aterrizaje 3, patada 4, patada voladora 4, embestida 6, carga 4, daño 2) y sus variantes `kage_f1..f4.png` y `kage_distraccion.png`.
-- Sapo gigante, onigiri y pergamino: pack "Ninja Adventure" de pixel-boy (CC0), carpeta del pack en disco. Reutilizar también sus FX (aura, explosión, humo), monstruos (kappa, serpiente, bambú, farolillo) y audio.
+- Héroe: hojas propias en `assets/kage_f1..f4.png` y `kage_distraccion.png` (celdas
+  64×72, pies a y=64, 8 columnas). Detalle de filas y fotogramas en `assets/README.md`.
+  El sprite dibujado en código sigue como respaldo si una hoja no carga.
+- Invocación: `assets/sapo.png`, hoja propia de celda 192 px y filas de altura distinta,
+  medida por `js/sheet.js`. El sapo del pack queda de respaldo.
+- Enemigos y FX del pack "Ninja Adventure" de pixel-boy (CC0): kappa, serpiente,
+  farolillo, humo, explosión, chispa y aura, más la música y los sonidos.
+- **Parecido con la obra que inspira el proyecto**: el héroe (rubio, mono naranja, banda
+  con cintas, esfera de chakra azul) y el sapo invocado con pipa son muy reconocibles.
+  La regla de arriba dice que si algo se parece demasiado hay que cambiarlo; queda
+  anotado como decisión pendiente de Félix, no se ha tocado el arte entregado.
 
 ## Pendientes (por prioridad)
-1. **Faltan las hojas del héroe.** `assets/kage_f1..f4.png` y `kage_distraccion.png` no
-   están en el equipo (ver `assets/FALTA.md`). El motor ya las carga y detecta solo los
-   fotogramas por fila; en cuanto se dejen en `assets/` o `assets/sprites/` entran sin
-   tocar código. Mientras tanto se usa el sprite dibujado en código.
-2. Recortar `assets/pack/Audio` (95 MB) a lo que de verdad suena.
-3. Quitar modo pruebas (teclas 1-4, vidas ∞, `window.KAGE`) para la versión final.
+1. Recortar `assets/pack/Audio` (95 MB) a lo que de verdad suena.
+2. Quitar modo pruebas (teclas 1-4, vidas ∞, `window.KAGE`) para la versión final.
+3. Revisar el parecido del héroe con el personaje que lo inspira (ver *Arte*).
 
 ## Hecho
 - Separación en módulos y assets fuera del HTML.
-- Motor de hojas de sprites del héroe (`js/hero.js`).
+- Motor de hojas de sprites del héroe (`js/hero.js`), con las cuatro hojas reales
+  (`assets/kage_f1..f4.png`), la de distracción y el sapo propio (`assets/sapo.png`).
 - Enemigos y efectos del pack: kappa, serpiente, farolillo, humo, explosión, chispa y aura.
   El oni y el caparazón siguen en código (el pack no trae equivalente y son arte propio).
 - Música y sonidos del pack con botón de silencio.
