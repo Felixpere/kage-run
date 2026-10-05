@@ -18,7 +18,6 @@ const ok = img => img.complete && img.naturalWidth > 0;
 export const MON = {
   kappa:   load('actor/monster/KappaGreen/SpriteSheet.png'),
   snake:   load('actor/monster/Snake/Snake.png'),
-  bamboo:  load('actor/monster/Bamboo/SpriteSheet.png'),
   lantern: load('actor/monster/LanternRed/SpriteSheet.png'),
 };
 export const MON_CELL = 16, MON_PERFIL = 2, MON_FRENTE = 0;
