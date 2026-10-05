@@ -1,0 +1,41 @@
+/* Layout: one arcade screen; HUD and touch pad live inside the canvas box; key legend under it. Single dark arcade theme by choice. */
+:root{
+  --bg:#0b0d14; --panel:#151a28; --fg:#f2efe6; --muted:#9aa3b8;
+  --accent:#ff7a1a; --chakra:#3ee6ff; --sage:#e03a3a; --gold:#ffd34a;
+  --display:'Press Start 2P',monospace; --body:'Nunito',system-ui,sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);padding-inline:16px;padding-block:12px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:10px}
+header{display:flex;justify-content:space-between;align-items:baseline;width:100%;max-width:1100px;flex-wrap:wrap;gap:6px}
+h1{font-family:var(--display);font-size:clamp(14px,3vw,22px);margin:0;color:var(--accent);text-shadow:3px 3px 0 #5a2600}
+.sub{font-size:13px;color:var(--muted);font-weight:600}
+#overlay{width:100%;max-width:1100px;display:flex;flex-direction:column;align-items:center;gap:14px;background:var(--panel);border:4px solid #2a3350;border-radius:6px;text-align:center;padding:20px 16px;box-sizing:border-box}
+#overlay.off,#wrap.off,#pad.off,#legend.off{display:none}
+#overlay h2{font-family:var(--display);font-size:clamp(14px,3vw,26px);margin:0;color:var(--accent);text-wrap:balance;line-height:1.5}
+#overlay p{margin:0;max-width:56ch;color:var(--muted);font-weight:600;line-height:1.4;font-size:clamp(11px,2.2vw,15px)}
+#wrap{position:relative;width:100%;max-width:1100px;aspect-ratio:2/1;background:#000;border:4px solid var(--panel);border-radius:6px;overflow:hidden;box-shadow:0 0 0 2px #000,0 20px 50px #000a}
+canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
+button{font-family:var(--display);font-size:14px;min-height:56px;width:min(100%,320px);background:var(--accent);color:#1a0a00;border:0;padding:14px 22px;border-radius:4px;cursor:pointer;box-shadow:0 4px 0 #7a3600}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 #7a3600}
+button:focus-visible{outline:3px solid var(--chakra);outline-offset:3px}
+.evo{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;max-width:600px}
+.evo span{font-family:var(--display);font-size:clamp(6px,1.3vw,8px);padding:8px;border:2px solid var(--muted);border-radius:4px;color:var(--muted);line-height:1.7}
+.evo .f0{border-color:var(--accent);color:var(--accent)}
+.evo .f1{border-color:var(--chakra);color:var(--chakra)}
+.evo .f2{border-color:var(--sage);color:var(--sage)}
+.evo .f3{border-color:var(--gold);color:var(--gold)}
+#pad{display:none;position:absolute;left:0;right:0;bottom:0;padding:0 10px 12px;box-sizing:border-box;justify-content:space-between;align-items:flex-end;gap:10px;user-select:none;touch-action:none;pointer-events:none}
+#pad div{display:flex;gap:8px}
+#pad .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.k{font-family:var(--display);font-size:14px;width:clamp(40px,11vw,58px);height:clamp(40px,11vw,58px);border-radius:50%;background:#0006;color:#fff;display:flex;align-items:center;justify-content:center;border:2px solid #fff5;pointer-events:auto;backdrop-filter:blur(2px)}
+.k.down{background:var(--accent);color:#1a0a00}
+@media (pointer:coarse){#pad{display:flex}}
+@media (max-width:600px){header{display:none}#legend{display:none}#pad{position:static;padding:10px 4px 0;background:none}#pad .k{background:#1a2238;border-color:#3a4360}}
+#legend{width:100%;max-width:1100px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;font-size:12px;color:var(--muted);font-weight:600}
+#legend div{display:flex;align-items:center;gap:8px;background:var(--panel);border-radius:4px;padding:6px 10px;border:1px solid #2a3350}
+#legend kbd{font-family:var(--display);font-size:9px;color:var(--fg);background:#0b0d14;border:1px solid #3a4360;border-bottom-width:3px;border-radius:3px;padding:5px 6px;min-width:14px;text-align:center}
+#legend .c0 kbd{color:var(--accent)}#legend .c1 kbd{color:var(--chakra)}#legend .c2 kbd{color:var(--sage)}#legend .c3 kbd{color:var(--gold)}
+.tip{font-size:12px;color:var(--muted);font-weight:600;text-align:center;max-width:70ch}
+#flash{position:absolute;inset:0;pointer-events:none;background:#fff;opacity:0;transition:opacity .35s}
+@media (prefers-reduced-motion:reduce){#flash{transition:none}}
