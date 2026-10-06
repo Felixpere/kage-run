@@ -1,4 +1,38 @@
+# Dependencias
 node_modules/
+
+# Packs de assets originales: en el repo solo van los PNG/audio que usa el juego
+*.zip
+*.7z
+*.rar
+*.tar
+*.tar.gz
+assets/pack-original/
+assets/**/*_Preview.gif
+assets/**/Preview.gif
+
+# Temporales del sistema
 .DS_Store
 Thumbs.db
+desktop.ini
+*.tmp
+*.temp
+*~
+*.bak
+*.orig
+
+# Registros
 *.log
+npm-debug.log*
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
