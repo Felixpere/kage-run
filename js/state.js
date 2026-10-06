@@ -19,6 +19,20 @@ export const FORMS = [
   {name:'SABIO', col:'#D4503A',jump:-13.6,walk:2.4,run:5.2,sprint:9.6},
   {name:'DORADO',col:'#E8B64A',jump:-13.9,walk:2.5,run:5.5,sprint:10.4}];
 
+// La esfera de chakra (Z) evoluciona con la forma. Las distancias van en
+// tiles de 48 px; el motor las convierte a pixeles.
+//   mano       la esfera se queda en la mano y el heroe embiste
+//   proyectil  sale disparada recta y revienta al tocar estructura
+//   cuchilla   sale girando, atraviesa todo y detona una expansion al final
+export const ORBE = [
+  { tipo:'mano',      coste:20, r:30, embestidaTiles:2,  vida:60, parpadeo:true },
+  { tipo:'mano',      coste:25, r:60, embestidaTiles:3,  vida:26, parpadeo:false },
+  { tipo:'proyectil', coste:30, r:34, vel:9,  alcanceTiles:8 },
+  { tipo:'cuchilla',  coste:50, r:40, vel:11, alcanceTiles:16, expansionTiles:5 },
+];
+// Con la barra llena la tecnica sale a 1,6x gastando el doble.
+export const CARGADO_ESC = 1.6;
+
 // Entrada: objetos constantes mutados en sitio, compartidos por todos los modulos.
 export const keys = {}, pressed = {}, released = {};
 
@@ -28,6 +42,6 @@ export const G = {
   form:0, lives:3, score:0, gotCount:0, running:false, t:0, particles:[],
   clones:[], chakra:0, shake:0, debris:[], summon:null, solidsLive:[], fallen:[],
   craters:[], items:[], beam:null, charge:0, runT:0, snakes:[], mortars:[],
-  shots:[], scorch:[], mounds:[], henge:0, orbHold:0, charging:false,
-  god:true, showHud:true, ring:null, fx:[],
+  shots:[], scorch:[], mounds:[], orbHold:0, charging:false,
+  god:true, showHud:true, ring:null, fx:[], orb:null, expansion:null,
 };

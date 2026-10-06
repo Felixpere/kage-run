@@ -1,17 +1,24 @@
 // Dibujado: fondo, mundo, jugador y HUD.
 import { G, ctx, FORMS, W, CH, H, TILE, ZOOM, VW, VH, BOTTOM_PAD } from './state.js';
 import { COLS, bushes, scrolls0, goal } from './level.js';
-import { NINJAS, HENGE, DANCER, ONI, ONI2, KAPPA, SHELL, SNAKE, MORTAR, LANTERN, USED,
+import { NINJAS, DANCER, ONI, ONI2, KAPPA, SHELL, SNAKE, MORTAR, LANTERN, USED,
          GROUND2, DIRT2, BLOCK2, FROG, ONIGIRI_IMG, SCROLL_IMG } from './sprites.js';
 import { dust } from './fx.js';
-import { drawHero } from './hero.js';
+import { drawHero, drawHeroAnim, heroAnimFor, heroReady } from './hero.js';
 import { drawMon, monListo, drawFX, drawAura, MON_PERFIL, MON_FRENTE } from './packfx.js';
 import { drawSapo } from './summon.js';
 
 function drawBamboo(x,y,w,h){const g=ctx.createLinearGradient(x,0,x+w,0);g.addColorStop(0,'#1a7a28');g.addColorStop(0.25,'#35C94A');g.addColorStop(0.55,'#239F32');g.addColorStop(1,'#0F5C1C');ctx.fillStyle=g;ctx.fillRect(x,y,w,h);ctx.fillStyle='#2B1A10';ctx.fillRect(x-1,y,1,h);ctx.fillRect(x+w,y,1,h);ctx.fillStyle='#45d85a';ctx.fillRect(x,y,w,6);ctx.fillStyle='#0F5C1C';ctx.fillRect(x,y+6,w,3);ctx.fillStyle='#2B1A10';ctx.fillRect(x+Math.round(w/2)-2,y+16,4,h-22);ctx.fillStyle='#0F5C1C';for(let yy=y+40;yy<y+h-10;yy+=36)ctx.fillRect(x+4,yy,w-8,2)}
 function glow(x,y,r,col){const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,col+'ff');g.addColorStop(0.5,col+'88');g.addColorStop(1,col+'00');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill()}
 
+// Los clones repiten la animacion del heroe 6 fotogramas por detras.
+const RETARDO_CLON = 6;
+const histAnim = [];
+
 function draw(){
+  histAnim.push(heroReady() ? heroAnimFor() : 'idle');
+  if (histAnim.length > RETARDO_CLON + 2) histAnim.shift();
+
   const sky=ctx.createLinearGradient(0,0,0,CH);sky.addColorStop(0,'#DFEEFF');sky.addColorStop(0.45,'#9CCBE8');sky.addColorStop(1,'#5F9CBE');ctx.fillStyle=sky;ctx.fillRect(0,0,W,CH);
   const gS=(H-2*TILE-G.camY)*ZOOM;
   // far hills
@@ -47,20 +54,32 @@ function draw(){
     if(!propio){
     ctx.save();ctx.imageSmoothingEnabled=false;ctx.translate(G.summon.x+290,H-2*TILE);if(G.summon.vx<0||false){}ctx.drawImage(sheet,fr*40,0,40,40,-fw/2,-fw,fw,fw);ctx.restore();}
     if(G.summon.stage===2&&G.t%2==0)dust(G.summon.x+200+Math.random()*200,H-2*TILE,2)}
-  for(const c of G.clones){ctx.globalAlpha=0.6+0.3*Math.sin(G.t/3);ctx.save();if(c.vx<0){ctx.translate(c.x+60,c.y);ctx.scale(-1,1);ctx.drawImage(NINJAS[G.form].run1,0,0)}else ctx.drawImage(Math.floor(G.t/6)%2?NINJAS[G.form].run1:NINJAS[G.form].run2,c.x,c.y);ctx.restore();ctx.globalAlpha=1}
+  for(const c of G.clones){
+    if(c.nace>0)continue;                       // aun dentro de la nube de humo
+    const anim = c.kick>0 ? 'patada'
+               : (histAnim[0] || 'correr');     // el estado del heroe, con retardo
+    if(!drawHeroAnim(c.x,c.y,c.face||(c.vx<0?-1:1),anim,0.7)){
+      ctx.globalAlpha=0.7;ctx.save();
+      if((c.face||c.vx)<0){ctx.translate(c.x+60,c.y);ctx.scale(-1,1);ctx.drawImage(NINJAS[G.form].run1,0,0)}
+      else ctx.drawImage(Math.floor(G.t/6)%2?NINJAS[G.form].run1:NINJAS[G.form].run2,c.x,c.y);
+      ctx.restore();ctx.globalAlpha=1;
+    }
+  }
   if(G.beam){const a=Math.min(1,G.beam.life/8);ctx.save();ctx.globalAlpha=a*0.9;ctx.translate(G.beam.x,G.beam.y);ctx.scale(G.beam.dir,1);ctx.rotate(-0.5);
     const prog=Math.min(1,G.beam.w/500);ctx.beginPath();ctx.ellipse(0,0,250*prog,120*prog,0,-Math.PI*0.5,Math.PI*0.5);ctx.ellipse(0,0,170*prog,120*prog,0,Math.PI*0.5,-Math.PI*0.5,true);ctx.closePath();
     ctx.fillStyle='#F7D59D';ctx.fill();ctx.lineWidth=6;ctx.strokeStyle='#E8B64A';ctx.stroke();
     ctx.strokeStyle='#FFF6D0';ctx.lineWidth=5;for(let k=1;k<=4;k++){ctx.beginPath();ctx.ellipse(0,0,(180+k*14)*prog,(60+k*14)*prog,0,-Math.PI*0.45,Math.PI*0.45);ctx.stroke()}ctx.restore()}
   
-  if(!(G.P.inv>0&&G.P.aura<=0&&G.charge<=0&&G.henge<=0&&G.P.rush<=0&&Math.floor(G.t/4)%2))drawPlayer();
+  if(!(G.P.inv>0&&G.P.aura<=0&&G.charge<=0&&G.P.rush<=0&&Math.floor(G.t/4)%2))drawPlayer();
+  if(G.orb)drawOrbe(G.orb);
+  if(G.expansion)drawExpansion(G.expansion);
   for(const e of G.fx)drawFX(e);
   for(const p of G.particles){ctx.globalAlpha=Math.min(1,p.life/25);ctx.fillStyle=p.col;if(p.heart){ctx.fillRect(p.x-6,p.y,4,4);ctx.fillRect(p.x+2,p.y,4,4);ctx.fillRect(p.x-8,p.y+4,16,4);ctx.fillRect(p.x-6,p.y+8,12,4);ctx.fillRect(p.x-4,p.y+12,8,4);ctx.fillRect(p.x-2,p.y+16,4,4)}else ctx.fillRect(p.x,p.y,5,5)}ctx.globalAlpha=1;
   ctx.restore();
   if(G.showHud){ctx.font='14px "Press Start 2P",monospace';ctx.textBaseline='top';
     const pd=14;ctx.fillStyle='#2B1A10aa';ctx.fillRect(0,0,W,52);
     hudText('PERG '+G.gotCount+'/'+scrolls0.length,pd,10,'#fff');
-    hudText(FORMS[G.form].name+(G.sexy>0?' DISTRACCION':G.henge>0?' HENGE':''),W*0.32,10,(G.henge>0||G.sexy>0)?'#FF5CC8':FORMS[G.form].col);
+    hudText(FORMS[G.form].name+(G.sexy>0?' DISTRACCION':''),W*0.32,10,G.sexy>0?'#FF5CC8':FORMS[G.form].col);
     hudText('VIDAS '+(G.god?'∞':G.lives),W*0.6,10,G.god?'#3ee6ff':'#fff');
     hudText(String(G.score).padStart(6,'0'),W-pd-86,10,'#ffd166');
     ctx.fillStyle='#0008';ctx.fillRect(pd,32,180,14);ctx.fillStyle=G.charging?'#9ff3ff':'#3ee6ff';ctx.fillRect(pd+2,34,176*G.chakra/100,10);ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.strokeRect(pd+.5,32.5,179,13);
@@ -75,11 +94,11 @@ function blob(ox,oy,r){ctx.beginPath();ctx.arc(ox,oy+r*0.2,r*0.9,0,7);ctx.arc(ox
 function rhill(x,base,w,h,col,shade,spot){const steps=16;for(let i=0;i<steps;i++){const f=i/steps,hw=w*Math.sqrt(1-f*f),hy=base-h*f;ctx.fillStyle=shade;ctx.fillRect(Math.round(x-hw),Math.round(hy-h/steps),Math.round(hw*0.18)+4,Math.ceil(h/steps)+1);ctx.fillStyle=col;ctx.fillRect(Math.round(x-hw*0.82+4),Math.round(hy-h/steps),Math.round(hw*1.82)-4,Math.ceil(h/steps)+1)}
   ctx.fillStyle=shade;const sp=[[-0.45,0.25,18,10],[0.2,0.55,22,12],[-0.1,0.8,14,8],[0.45,0.3,12,8],[-0.25,0.55,10,6]];for(const [a,b,sw,sh] of sp)ctx.fillRect(Math.round(x+w*a),Math.round(base-h*b),sw,sh);ctx.fillStyle=spot;ctx.fillRect(Math.round(x+w*0.05),Math.round(base-h*0.4),8,6)}
 function drawPlayer(){
-  const F=FORMS[G.form],set=G.sexy>0?DANCER:G.henge>0?HENGE:NINJAS[G.form],col=G.sexy>0?'#FF5CC8':G.henge>0?'#FF5CC8':F.col;
+  const F=FORMS[G.form],set=G.sexy>0?DANCER:NINJAS[G.form],col=G.sexy>0?'#FF5CC8':F.col;
   let sp=set.idle;if(G.sexy>0)sp=Math.floor(G.t/10)%2?set.charge:set.idle;else if(G.charge>0||G.charging)sp=set.charge;else if(G.P.kick>0||G.P.flyKick>0)sp=set.kick;else if(!G.P.ground)sp=set.jump;else if(Math.abs(G.P.vx)>0.5)sp=Math.floor(G.t/(Math.abs(G.P.vx)>4?4:7))%2?set.run1:set.run2;
   const x=Math.round(G.P.x),y=Math.round(G.P.y);
-  if(G.P.aura>0||G.form>=2||G.charge>0||G.charging||G.henge>0){const r=G.charge>0?36+((50-G.charge)/50)*50:G.charging?50+Math.sin(G.t/3)*8:56+Math.sin(G.t/4)*5;glow(x+20,y+45,r,col);drawAura(x+20,y+90,3.2,G.t)}
-  if(G.form===3&&G.henge<=0){ctx.fillStyle='#ffd34a';for(let i=0;i<3;i++){const a=G.t/6+i*2.1;ctx.fillRect(x+20-G.P.face*56+Math.cos(a)*10-4,y+56+Math.sin(a)*12+i*6,8,8)}}
+  if(G.P.aura>0||G.form>=2||G.charge>0||G.charging){const r=G.charge>0?36+((50-G.charge)/50)*50:G.charging?50+Math.sin(G.t/3)*8:56+Math.sin(G.t/4)*5;glow(x+20,y+45,r,col);drawAura(x+20,y+90,3.2,G.t)}
+  if(G.form===3){ctx.fillStyle='#ffd34a';for(let i=0;i<3;i++){const a=G.t/6+i*2.1;ctx.fillRect(x+20-G.P.face*56+Math.cos(a)*10-4,y+56+Math.sin(a)*12+i*6,8,8)}}
   if(!G.P.ground&&G.P.vy<2&&G.P.vy>-6){ctx.strokeStyle=col+'aa';ctx.lineWidth=3;ctx.lineWidth=5;ctx.beginPath();ctx.arc(x+20-G.P.face*36,y+80,46,G.P.face>0?Math.PI*1.1:Math.PI*1.6,G.P.face>0?Math.PI*1.45:Math.PI*1.95);ctx.stroke()}
   ctx.fillStyle=col;ctx.fillRect(x+(G.P.face>0?-26:40),y+16+Math.sin(G.t/5)*3,26,5);ctx.fillRect(x+(G.P.face>0?-22:38),y+24+Math.cos(G.t/5)*3,22,5);
   const sprinting=Math.abs(G.P.vx)>6&&G.P.ground&&G.P.dash<=0,sxs=G.P.dash>0?1.3:sprinting?1.15:G.P.land>0?1.12:1,sys=G.P.dash>0?0.55:sprinting?0.9:G.P.land>0?0.86:1;
@@ -89,9 +108,63 @@ function drawPlayer(){
   }
   if(G.sexy>0){const sw=Math.sin(G.t/6);for(const dx of [-34,74]){ctx.save();ctx.translate(x+dx,y+34+sw*6);ctx.rotate(dx<0?-0.6+sw*0.3:0.6-sw*0.3);ctx.fillStyle='#FF5CC8';ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,30,Math.PI*1.15,Math.PI*1.85);ctx.closePath();ctx.fill();ctx.fillStyle='#FFF6D0';for(let k=0;k<4;k++){ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,27,Math.PI*(1.2+k*0.17),Math.PI*(1.2+k*0.17)+0.08);ctx.closePath();ctx.fill()}ctx.restore()}
     if(G.t%8==0)G.particles.push({x:x+Math.random()*40,y:y-10,vx:(Math.random()-.5),vy:-1,life:40,col:'#FF5CC8',g:-0.01,heart:true})}
-  if(G.P.rush>0){const ox=x+20+G.P.face*62,oy=y+40,R=60;ctx.fillStyle='#2FA6D4';ctx.beginPath();ctx.arc(ox,oy,R,0,7);ctx.fill();ctx.fillStyle='#7FD8F0';ctx.beginPath();ctx.arc(ox,oy,R-5,0,7);ctx.fill();ctx.fillStyle='#C6F4FC';ctx.beginPath();ctx.arc(ox,oy,R-22,0,7);ctx.fill();ctx.fillStyle='#FFFFFF';ctx.beginPath();ctx.arc(ox,oy,15,0,7);ctx.fill();
-    ctx.strokeStyle='#FFFFFF';ctx.lineWidth=5;for(let k=0;k<2;k++){ctx.beginPath();for(let a=0;a<3.2;a+=0.2){const r=10+a*14,an=a*2.2+G.t/4*(k?-1:1)+k*Math.PI;ctx.lineTo(ox+Math.cos(an)*r,oy+Math.sin(an)*r)}ctx.stroke()}
-    for(let k=0;k<5;k++){const an=G.t/5+k*1.26;ctx.fillStyle='#FFFFFF';ctx.fillRect(ox+Math.cos(an)*(R+6)-2,oy+Math.sin(an)*(R*0.6)-2,4,4)}
-    ctx.fillStyle='#7FD8F0aa';for(let k=0;k<3;k++)ctx.fillRect(ox-G.P.face*(R+10+k*20),oy-14+k*10,-G.P.face*30,5)}
 }
+
+/** Esfera de chakra: en la mano, lanzada o cuchilla giratoria. */
+function drawOrbe(o){
+  const R=o.r;
+  // la de forma 1 parpadea en su ultimo tercio
+  if(o.parpadeo&&o.vida<o.maxVida/3&&Math.floor(G.t/3)%2)return;
+  ctx.save(); ctx.translate(o.x,o.y);
+  if(o.tipo==='cuchilla'){
+    ctx.rotate(o.giro);
+    ctx.fillStyle='#FFF6D0';
+    for(let k=0;k<4;k++){                     // cuatro aspas
+      ctx.rotate(Math.PI/2);
+      ctx.beginPath(); ctx.moveTo(0,0);
+      ctx.quadraticCurveTo(R*1.5,-R*0.35,R*2.1,0);
+      ctx.quadraticCurveTo(R*1.5,R*0.35,0,0);
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.fillStyle='#E8B64A'; ctx.beginPath(); ctx.arc(0,0,R*0.62,0,7); ctx.fill();
+    ctx.fillStyle='#FFFFFF'; ctx.beginPath(); ctx.arc(0,0,R*0.3,0,7); ctx.fill();
+  }else{
+    const anillos=[['#2FA6D4',R],['#7FD8F0',R*0.82],['#C6F4FC',R*0.55],['#FFFFFF',R*0.25]];
+    for(const [col,rr] of anillos){ctx.fillStyle=col;ctx.beginPath();ctx.arc(0,0,rr,0,7);ctx.fill()}
+    ctx.strokeStyle='#FFFFFF'; ctx.lineWidth=Math.max(2,R*0.09);
+    const fase=o.tipo==='mano'?G.t/4:o.giro*2;
+    for(let k=0;k<2;k++){                     // dos espirales contrarias
+      ctx.beginPath();
+      for(let a=0;a<3.2;a+=0.2){
+        const rr=R*0.16+a*R*0.23, an=a*2.2+fase*(k?-1:1)+k*Math.PI;
+        ctx.lineTo(Math.cos(an)*rr,Math.sin(an)*rr);
+      }
+      ctx.stroke();
+    }
+    for(let k=0;k<5;k++){                     // cinco chispas en orbita
+      const an=G.t/5+k*1.26;
+      ctx.fillStyle='#FFFFFF';
+      ctx.fillRect(Math.cos(an)*(R+R*0.1)-2,Math.sin(an)*(R*0.6)-2,4,4);
+    }
+  }
+  ctx.restore();
+  if(o.cargado){ glow(o.x,o.y,R*1.9,o.tipo==='cuchilla'?'#E8B64A':'#7FD8F0') }
+  if(o.tipo!=='mano'){                        // estela
+    ctx.fillStyle=(o.tipo==='cuchilla'?'#E8B64A':'#7FD8F0')+'88';
+    for(let k=0;k<3;k++)ctx.fillRect(o.x-o.dir*(R+10+k*18),o.y-5+k*5,-o.dir*26,4);
+  }
+}
+
+/** Expansion de la cuchilla: onda que arrasa lo que toca. */
+function drawExpansion(ex){
+  const a=Math.max(0,Math.min(1,ex.life/26));
+  ctx.save(); ctx.globalAlpha=a*0.55;
+  const g=ctx.createRadialGradient(ex.x,ex.y,ex.r*0.25,ex.x,ex.y,ex.r);
+  g.addColorStop(0,'#FFFFFF'); g.addColorStop(0.55,'#FFF6D0'); g.addColorStop(1,'#E8B64A00');
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(ex.x,ex.y,ex.r,0,7); ctx.fill();
+  ctx.globalAlpha=a; ctx.strokeStyle='#FFF6D0'; ctx.lineWidth=6;
+  ctx.beginPath(); ctx.arc(ex.x,ex.y,ex.r,0,7); ctx.stroke();
+  ctx.restore(); ctx.globalAlpha=1;
+}
+
 export { draw, drawPlayer, drawBamboo, glow };

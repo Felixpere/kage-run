@@ -22,10 +22,9 @@ Al final espera el torii.
 | Saltar (soltar antes = salto corto) | `↑` · `W` · `Espacio` | todas | — |
 | Doble salto | `↑` en el aire | II+ | — |
 | Patada (en el aire, patada voladora) | `K` | todas | — |
-| Embestida de esfera (toque) | `Z` | II+ | 25 |
-| Cargar chakra (mantener) | `Z` | II+ | — |
-| Clones | `C` | II+ | 35 |
-| Henge — 5 s invencible | `H` | II+ | 30 |
+| Esfera de chakra (toque) | `Z` | todas | 20 / 25 / 30 / 50 |
+| Cargar chakra (mantener) | `Z` | todas | — |
+| Clones (2 · 4 · 6 según forma) | `C` | II+ | 35 |
 | Jutsu de distracción — 3 s | `J` | II+ | 30 |
 | Dash bajo | `X` | III+ | — |
 | Invocación del sapo | `B` | III+ | 60 |
@@ -34,7 +33,7 @@ Al final espera el torii.
 ### Táctil
 
 En móvil o pantalla táctil aparecen los controles sobre el propio juego:
-`◀` `▶` para moverse, `▲` saltar, `K` patada, `●` esfera, `✦` clones, `H` henge,
+`◀` `▶` para moverse, `▲` saltar, `K` patada, `●` esfera, `✦` clones,
 `J` distracción, `X` dash, `B` invocación, `☄` haz dorado y `⋯` para ocultar el HUD.
 
 El botón `🔊` de la esquina silencia música y efectos; recuerda el estado.
@@ -54,9 +53,22 @@ pierde una forma; en Novato, una vida.
 | | Forma | Qué desbloquea |
 |---|---|---|
 | **I** | **Novato** · naranja | Correr, saltar, patada |
-| **II** | **Chakra** · cian | Doble salto, embestida de esfera, clones, henge, distracción |
-| **III** | **Sabio** · haori rojo | Dash bajo, atraviesa enemigos, invocación del sapo |
-| **IV** | **Dorado** | Dash de fuego con quemaduras, haz dorado a pantalla completa |
+| **II** | **Chakra** · cian | Doble salto, clones ×2, distracción |
+| **III** | **Sabio** · haori rojo | Dash bajo, atraviesa enemigos, invocación del sapo, clones ×4 |
+| **IV** | **Dorado** | Dash de fuego con quemaduras, haz dorado, clones ×6 |
+
+### La esfera de chakra (`Z`)
+
+No es una técnica fija: cambia por completo con la forma.
+
+| Forma | Qué hace | Coste |
+|---|---|---|
+| **I** Novato | Esfera de 60 px en la mano. Parpadea y se deshace sola al segundo si no toca nada. Embestida de 2 tiles. | 20 |
+| **II** Chakra | Esfera de 120 px en la mano. Embestida de 3 tiles; rompe estructuras y mata al contacto. | 25 |
+| **III** Sabio | Se **lanza** como proyectil a 9 px/frame. Atraviesa enemigos y revienta la estructura que toca. Alcance 8 tiles. | 30 |
+| **IV** Dorado | **Cuchilla de chakra**: sale girando con cuatro aspas, 16 tiles de alcance, atraviesa todo, y al acabar detona una expansión de 5 tiles que arrasa estructuras y enemigos. | 50 |
+
+Con la barra de chakra **al 100 %** la técnica sale a **1,6× de tamaño y alcance gastando el doble**.
 
 ---
 

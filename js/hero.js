@@ -140,15 +140,24 @@ export function heroAnimFor() {
  * Devuelve false si no hay hoja y hay que recurrir al sprite de codigo.
  */
 export function drawHero(x, y, face, sxs = 1, sys = 1) {
+  return drawHeroAnim(x, y, face, heroAnimFor(), 1, sxs, sys);
+}
+
+/**
+ * Dibuja una animacion concreta de la hoja en cualquier posicion. Lo usan el
+ * heroe y los clones, que repiten su estado con unos fotogramas de retardo.
+ */
+export function drawHeroAnim(x, y, face, animKey, alpha = 1, sxs = 1, sys = 1, desfase = 0) {
   const sheet = heroSheet();
   if (!sheet) return false;
-  const anim = sheet.byKey[heroAnimFor()] || sheet.byKey.idle;
+  const anim = sheet.byKey[animKey] || sheet.byKey.idle;
   const n = Math.max(1, anim.frames);
   const paso = Math.max(1, Math.round(60 / anim.fps));
-  let f = Math.floor(G.t / paso);
+  let f = Math.floor((G.t + desfase) / paso);
   f = anim.loop ? f % n : Math.min(n - 1, f % n);
 
   ctx.save();
+  ctx.globalAlpha = alpha;
   ctx.imageSmoothingEnabled = false;
   ctx.translate(x + 20, y + HERO_H);
   ctx.scale(sxs * (face < 0 ? -1 : 1), sys);

@@ -29,10 +29,9 @@ const NR2=NB.slice(0,13).concat(["..bb...bb...",".bb....bb...",".bb.....bb..","d
 const NJ=NB.slice(0,13).concat(["..bb....bb..",".bb......bb.",".bb......bb.",".dd......dd.","............"]);
 const NK=NB.slice(0,8).concat(["..CooooooC..",".CoooAAoooss",".soooAAooo..",".soOooooOos.","..OooooooO..","...bb..bbbb.","...bb....ddd","...bb.......","...dd.......","..ddd......."]);
 const NC=NB.slice(0,7).concat(["...CCCCCC...","ssCooooooCss","..CoooAAoC..",".CoooAAoooC.",".CoOooooOoC.","..OooooooO..","...bb..bb...","...bb..bb...","...bb..bb...","...dd..dd...","..ddd..ddd.."]);
-function ninjaSet(f,alt){const F=FORMS[f];const cm=alt?{A:'#FF5CC8',P:'#e8d8ff',h:'#f6f1e6',e:'#FF5CC8',s:'#f8e0c8',k:'#1b1b2a',C:'#4a2a7a',o:'#2a1a4a',O:'#1a0f2e',b:'#4a2a7a',d:'#1b1b2a'}
-  :{A:F.col,P:'#c9d1e0',h:f===3?'#FFE07A':'#EAC867',e:f>=2?F.col:'#2B1A10',s:'#F6D3A8',k:'#2B1A10',C:f===2?'#A8332A':f===3?'#E8B64A':'#2B1A10',o:f===2?'#2B1A10':f===3?'#F7D59D':'#E0701A',O:f===2?'#1a0f08':f===3?'#E8B64A':'#9C4406',b:f===2?'#2B1A10':f===3?'#F7D59D':'#FF8A2B',d:'#2B1A10'};
+function ninjaSet(f){const F=FORMS[f];const cm={A:F.col,P:'#c9d1e0',h:f===3?'#FFE07A':'#EAC867',e:f>=2?F.col:'#2B1A10',s:'#F6D3A8',k:'#2B1A10',C:f===2?'#A8332A':f===3?'#E8B64A':'#2B1A10',o:f===2?'#2B1A10':f===3?'#F7D59D':'#E0701A',O:f===2?'#1a0f08':f===3?'#E8B64A':'#9C4406',b:f===2?'#2B1A10':f===3?'#F7D59D':'#FF8A2B',d:'#2B1A10'};
   const S5=5;return{idle:sprite(NB,cm,S5),run1:sprite(NR1,cm,S5),run2:sprite(NR2,cm,S5),jump:sprite(NJ,cm,S5),kick:sprite(NK,cm,S5),charge:sprite(NC,cm,S5)}}
-const NINJAS=[0,1,2,3].map(f=>ninjaSet(f,false));const HENGE=ninjaSet(1,true);
+const NINJAS=[0,1,2,3].map(f=>ninjaSet(f));
 const DANCER=(()=>{const cm={A:'#D4503A',P:'#FFF6D0',h:'#2B1A10',e:'#2B1A10',s:'#F6D3A8',k:'#2B1A10',C:'#FF5CC8',o:'#FFD6E8',O:'#FF9ACD',b:'#FFD6E8',d:'#D4503A'};const S5=5;return{idle:sprite(NB,cm,S5),charge:sprite(NC,cm,S5)}})();
 const ONI=sprite(["..w........w..","..ww......ww..","...RRRRRRRR...","..RRRRRRRRRR..",".RRkRRRRRRkRR.",".RRwwkRRkwwRR.",".RRRRRRRRRRRR.",".RRRkkkkkkRRR.","..RRRwRwRwRR..","...RRRRRRRR...","...kyykyykk...","...RR....RR...","..kkk....kkk.."],{R:'#d23a2e',w:'#ffffff',k:'#1b1b2a',y:'#ffd166'});
 const ONI2=sprite(["..w........w..","..ww......ww..","...RRRRRRRR...","..RRRRRRRRRR..",".RRkRRRRRRkRR.",".RRwwkRRkwwRR.",".RRRRRRRRRRRR.",".RRRkkkkkkRRR.","..RRRwRwRwRR..","...RRRRRRRR...","...kyykyykk...","..RR......RR..",".kkk......kkk."],{R:'#d23a2e',w:'#ffffff',k:'#1b1b2a',y:'#ffd166'});
@@ -64,6 +63,6 @@ const GROUND2=mkTile(x=>{bricks(x,'#CC7923','#E09A3C','#8F4E16',24,12,22,48);x.f
 const DIRT2=mkTile(x=>{bricks(x,'#CC7923','#E09A3C','#8F4E16',24,12,0,48)});
 const BLOCK2=mkTile(x=>{bricks(x,'#864A2A','#A85C34','#4A2414',24,12,0,48);x.strokeStyle='#4A2414';x.lineWidth=2;x.strokeRect(1,1,46,46)});
 
-export { SC, PAL, sprite, NINJAS, HENGE, DANCER, ONI, ONI2, KAPPA, SHELL, SNAKE, MORTAR,
+export { SC, PAL, sprite, NINJAS, DANCER, ONI, ONI2, KAPPA, SHELL, SNAKE, MORTAR,
          SCROLL, GROUND, DIRT, BLOCK, LANTERN, USED, ONIGIRI, BUSH, CLOUD, BEAST,
          FROG, ONIGIRI_IMG, SCROLL_IMG, mkTile, bricks, GROUND2, DIRT2, BLOCK2 };

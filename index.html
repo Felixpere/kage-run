@@ -20,12 +20,12 @@
   <h2>KAGE RUN</h2>
   <p>Kage es un ninja novato en un reino de bambú y ladrillo. Cada 3 pergaminos sube de forma. El nivel tiene 4 tramos: el primero es un paseo, el último una demolición. Al final te espera el torii.</p>
   <div class="evo">
-    <span class="f0">I · NOVATO<br>correr · saltar · patada (K)</span>
-    <span class="f1">II · CHAKRA<br>doble salto · esfera (Z) · clones (C) · henge (H) · distracción (J)</span>
-    <span class="f2">III · SABIO<br>dash bajo (X) · atraviesa enemigos · invocación (B)</span>
-    <span class="f3">IV · DORADO<br>dash de fuego · haz dorado (V)</span>
+    <span class="f0">I · NOVATO<br>correr · saltar · patada (K)<br>esfera pequeña en la mano (Z, 20)</span>
+    <span class="f1">II · CHAKRA<br>doble salto · clones x2 (C) · distracción (J)<br>esfera grande y embestida (Z, 25)</span>
+    <span class="f2">III · SABIO<br>dash bajo (X) · atraviesa enemigos · invocación (B) · clones x4<br>esfera lanzada, 8 tiles (Z, 30)</span>
+    <span class="f3">IV · DORADO<br>dash de fuego · haz dorado (V) · clones x6<br>cuchilla de chakra, 16 tiles + expansión (Z, 50)</span>
   </div>
-  <p>Mantén Z para cargar chakra (pose de carga). Patea caparazones de kappa para lanzarlos. Modo pruebas: teclas 1-4 cambian de forma al instante (y llenan el chakra), I vidas infinitas on/off, T oculta el HUD.</p>
+  <p>La esfera (Z) evoluciona con la forma: de bolita en la mano a cuchilla giratoria que arrasa cinco tiles a la redonda. Mantén Z para cargar chakra; <b>con la barra llena sale a 1,6x gastando el doble</b>. Patea caparazones de kappa para lanzarlos. Modo pruebas: teclas 1-4 cambian de forma al instante (y llenan el chakra), I vidas infinitas on/off, T oculta el HUD.</p>
   <button id="start">EMPEZAR</button>
 </div>
 
@@ -35,7 +35,7 @@
   <button id="mute" type="button" aria-pressed="false" aria-label="Silenciar">🔊</button>
   <div id="pad" class="off">
     <div><div class="k" data-k="left">◀</div><div class="k" data-k="right">▶</div></div>
-    <div class="grid"><div class="k" data-k="clone">✦</div><div class="k" data-k="orb">●</div><div class="k" data-k="beam">☄</div><div class="k" data-k="henge">H</div><div class="k" data-k="sexy">J</div><div class="k" data-k="kick">K</div><div class="k" data-k="dash">X</div><div class="k" data-k="jump">▲</div><div class="k" data-k="summon">B</div><div class="k" data-k="hud">⋯</div></div>
+    <div class="grid"><div class="k" data-k="clone">✦</div><div class="k" data-k="orb">●</div><div class="k" data-k="beam">☄</div><div class="k" data-k="sexy">J</div><div class="k" data-k="kick">K</div><div class="k" data-k="dash">X</div><div class="k" data-k="jump">▲</div><div class="k" data-k="summon">B</div><div class="k" data-k="hud">⋯</div></div>
   </div>
 </div>
 
@@ -43,9 +43,8 @@
   <div class="c0"><kbd>◀</kbd><kbd>▶</kbd> mover · mantener = sprint</div>
   <div class="c0"><kbd>↑</kbd><kbd>␣</kbd> saltar · soltar antes = corto</div>
   <div class="c0"><kbd>K</kbd> patada · en el aire: voladora</div>
-  <div class="c1"><kbd>Z</kbd> toque: embestida de esfera · mantener: cargar chakra</div>
-  <div class="c1"><kbd>C</kbd> clones (35 chakra)</div>
-  <div class="c1"><kbd>H</kbd> henge 5 s invencible (30)</div>
+  <div class="c0"><kbd>Z</kbd> toque: esfera de chakra (evoluciona) · mantener: cargar</div>
+  <div class="c1"><kbd>C</kbd> clones: 2 · 4 · 6 según forma (35)</div>
   <div class="c1"><kbd>J</kbd> jutsu de distracción 3 s (30)</div>
   <div class="c2"><kbd>X</kbd> dash bajo (Sabio+)</div>
   <div class="c2"><kbd>B</kbd> invocación (60)</div>

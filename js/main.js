@@ -10,7 +10,7 @@ import { startBtn } from './state.js';
 
 addEventListener('keydown',e=>{const k=map(e.key);if(k){if(!keys[k])pressed[k]=true;keys[k]=true;e.preventDefault()}});
 addEventListener('keyup',e=>{const k=map(e.key);if(k){keys[k]=false;released[k]=true}});
-function map(k){return{ArrowLeft:'left',a:'left',ArrowRight:'right',d:'right',ArrowUp:'jump',w:'jump',' ':'jump',x:'dash',X:'dash',z:'orb',Z:'orb',c:'clone',C:'clone',k:'kick',K:'kick',v:'beam',V:'beam',b:'summon',B:'summon',h:'henge',H:'henge',j:'sexy',J:'sexy',i:'god',I:'god',t:'hud',T:'hud','1':'f1','2':'f2','3':'f3','4':'f4'}[k]}
+function map(k){return{ArrowLeft:'left',a:'left',ArrowRight:'right',d:'right',ArrowUp:'jump',w:'jump',' ':'jump',x:'dash',X:'dash',z:'orb',Z:'orb',c:'clone',C:'clone',k:'kick',K:'kick',v:'beam',V:'beam',b:'summon',B:'summon',j:'sexy',J:'sexy',i:'god',I:'god',t:'hud',T:'hud','1':'f1','2':'f2','3':'f3','4':'f4'}[k]}
 document.querySelectorAll('.k').forEach(b=>{const k=b.dataset.k;
   const on=e=>{e.preventDefault();if(!keys[k])pressed[k]=true;keys[k]=true;b.classList.add('down')};
   const off=e=>{e.preventDefault();if(keys[k])released[k]=true;keys[k]=false;b.classList.remove('down')};
