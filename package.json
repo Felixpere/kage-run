@@ -1,0 +1,33 @@
+{
+  "name": "kage-run",
+  "version": "1.0.0",
+  "description": "Plataformero arcade 2D en HTML5 Canvas",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "serve": "python -m http.server 8000",
+    "test:nivel": "node tests/level-bot.mjs",
+    "test:nivel:mapa": "node tests/level-bot.mjs --solo-mapa",
+    "test:nivel:god": "node tests/level-bot.mjs --god",
+    "check:nivel": "python tests/fix-level.py --check",
+    "fix:nivel": "python tests/fix-level.py"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Felixpere/kage-run.git"
+  },
+  "keywords": [],
+  "author": "Felix Perez Acevedo",
+  "license": "MIT",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Felixpere/kage-run/issues"
+  },
+  "homepage": "https://github.com/Felixpere/kage-run#readme",
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  },
+  "private": true
+}

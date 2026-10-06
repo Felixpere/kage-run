@@ -22,6 +22,24 @@ function breakBlock(s,dir){const i=G.solidsLive.indexOf(s);if(i<0)return;G.score
 function supported(e){for(const s of G.solidsLive)if(e.x+e.w-4>s.x&&e.x+4<s.x+s.w&&Math.abs(e.y+e.h-s.y)<3)return s;return null}
 function applyGravity(e){const sup=supported(e);if(sup&&e.vy>=0){e.vy=0;e.y=sup.y-e.h;return true}e.vy=Math.min(12,e.vy+0.5);e.y+=e.vy;for(const s of G.solidsLive)if(hit(e,s)&&e.vy>0){e.y=s.y-e.h;e.vy=0;return true}return false}
 
+// Al caer al vacio hay que reaparecer en un sitio del que se pueda salir: sobre
+// suelo firme y con varios tiles por delante. Reaparecer en cam+100 conservando
+// la velocidad de sprint provocaba un bucle de muertes cuando la camara quedaba
+// justo antes de un hueco.
+const TILES_SEGUROS = 9;   // suelo por delante suficiente para coger carrerilla
+function haySuelo(x){
+  for(const s of G.solidsLive) if(s.t==='g' && x>=s.x && x<s.x+s.w && s.y<=H-2*TILE && s.y>H-3*TILE) return true;
+  return false;
+}
+function puntoSeguro(desde){
+  for(let x=Math.max(80,desde); x>80; x-=TILE){
+    let ok=true;
+    for(let k=0;k<TILES_SEGUROS;k++) if(!haySuelo(x+k*TILE+20)){ok=false;break}
+    if(ok) return x;
+  }
+  return 80;
+}
+
 function step(){
   if(G.freeze>0){G.freeze--;for(const k in pressed)pressed[k]=false;for(const k in released)released[k]=false;return}
   G.t++;const F=FORMS[G.form];
@@ -66,7 +84,7 @@ function step(){
   G.P.prevVy=G.P.vy;G.P.y+=G.P.vy;pb.y=G.P.y+off;const wasG=G.P.ground;G.P.ground=false;
   for(const s of G.solidsLive)if(hit(pb,s)){if(G.P.vy>0){G.P.y=s.y-G.P.h;G.P.ground=true;G.P.jumps=0;G.P.flyKick=0}else if(G.P.vy<0){G.P.y=s.y+s.h-off;bump(s)}G.P.vy=0;pb.y=G.P.y+off}
   if(G.P.ground&&!wasG){if(G.P.prevVy>9){dust(G.P.x+20,G.P.y+90,14);G.shake=Math.max(G.shake,3);crater(G.P.x+20,G.P.y+90);G.P.land=8}else dust(G.P.x+20,G.P.y+90,5)}
-  if(G.P.y>H+100){if(loseLife('Caíste al vacío.'))return;G.P.x=Math.max(80,G.cam+100);G.P.y=H-5*TILE;G.P.vy=0;G.P.inv=120}
+  if(G.P.y>H+100){if(loseLife('Caíste al vacío.'))return;G.P.x=puntoSeguro(G.cam+100);G.P.y=H-5*TILE;G.P.vy=0;G.P.vx=0;G.runT=0;G.P.jumps=0;G.P.dash=0;G.P.rush=0;G.P.inv=120}
   // ---- melee: kick + rush
   const kb=(G.P.kick>5||G.P.flyKick>0)?{x:G.P.face>0?G.P.x+G.P.w-8:G.P.x-44,y:G.P.y+24,w:52,h:56}:null;
   const rb=G.P.rush>0?{x:G.P.face>0?G.P.x+G.P.w-10:G.P.x-110,y:G.P.y-20,w:120,h:120}:null;

@@ -36,3 +36,6 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+
+# Informes que genera la prueba del nivel
+tests/level-bot-report*.json
