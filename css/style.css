@@ -1,7 +1,11 @@
 /* Layout: one arcade screen; HUD and touch pad live inside the canvas box; key legend under it. Single dark arcade theme by choice. */
 :root{
   --bg:#0b0d14; --panel:#151a28; --fg:#f2efe6; --muted:#9aa3b8;
-  --accent:#ff7a1a; --chakra:#3ee6ff; --sage:#e03a3a; --gold:#ffd34a;
+  --accent:#ff7a1a;
+  /* El cian es el CHAKRA (barra, aura de carga, esfera), no una forma. */
+  --chakra:#3ee6ff;
+  /* Un acento por forma: NIÑO, ADULTO, SABIO, DORADO. */
+  --f1:#FF8A2B; --f2:#E0701A; --f3:#D4503A; --f4:#E8B64A;
   --display:'Press Start 2P',monospace; --body:'Nunito',system-ui,sans-serif;
   color-scheme:dark;
 }
@@ -21,10 +25,10 @@ button:active{transform:translateY(3px);box-shadow:0 1px 0 #7a3600}
 button:focus-visible{outline:3px solid var(--chakra);outline-offset:3px}
 .evo{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;max-width:600px}
 .evo span{font-family:var(--display);font-size:clamp(6px,1.3vw,8px);padding:8px;border:2px solid var(--muted);border-radius:4px;color:var(--muted);line-height:1.7}
-.evo .f0{border-color:var(--accent);color:var(--accent)}
-.evo .f1{border-color:var(--chakra);color:var(--chakra)}
-.evo .f2{border-color:var(--sage);color:var(--sage)}
-.evo .f3{border-color:var(--gold);color:var(--gold)}
+.evo .f0{border-color:var(--f1);color:var(--f1)}
+.evo .f1{border-color:var(--f2);color:var(--f2)}
+.evo .f2{border-color:var(--f3);color:var(--f3)}
+.evo .f3{border-color:var(--f4);color:var(--f4)}
 #pad{display:none;position:absolute;left:0;right:0;bottom:0;padding:0 10px 12px;box-sizing:border-box;justify-content:space-between;align-items:flex-end;gap:10px;user-select:none;touch-action:none;pointer-events:none}
 #pad div{display:flex;gap:8px}
 #pad .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
@@ -35,7 +39,8 @@ button:focus-visible{outline:3px solid var(--chakra);outline-offset:3px}
 #legend{width:100%;max-width:1100px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;font-size:12px;color:var(--muted);font-weight:600}
 #legend div{display:flex;align-items:center;gap:8px;background:var(--panel);border-radius:4px;padding:6px 10px;border:1px solid #2a3350}
 #legend kbd{font-family:var(--display);font-size:9px;color:var(--fg);background:#0b0d14;border:1px solid #3a4360;border-bottom-width:3px;border-radius:3px;padding:5px 6px;min-width:14px;text-align:center}
-#legend .c0 kbd{color:var(--accent)}#legend .c1 kbd{color:var(--chakra)}#legend .c2 kbd{color:var(--sage)}#legend .c3 kbd{color:var(--gold)}
+#legend .c0 kbd{color:var(--f1)}#legend .c1 kbd{color:var(--f2)}#legend .c2 kbd{color:var(--f3)}#legend .c3 kbd{color:var(--f4)}
+#legend .ck kbd{color:var(--chakra)}   /* teclas de chakra */
 .tip{font-size:12px;color:var(--muted);font-weight:600;text-align:center;max-width:70ch}
 #flash{position:absolute;inset:0;pointer-events:none;background:#fff;opacity:0;transition:opacity .35s}
 @media (prefers-reduced-motion:reduce){#flash{transition:none}}

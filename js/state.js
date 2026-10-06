@@ -14,8 +14,8 @@ export const overlay = $('overlay'), flash = $('flash'), wrap = $('wrap'),
              pad = $('pad'), startBtn = $('start'), legend = $('legend');
 
 export const FORMS = [
-  {name:'NOVATO',col:'#E0701A',jump:-13.0,walk:2.2,run:4.6,sprint:8.4},
-  {name:'CHAKRA',col:'#7FD8F0',jump:-13.3,walk:2.3,run:4.9,sprint:9.0},
+  {name:'NIÑO',  col:'#FF8A2B',jump:-13.0,walk:2.2,run:4.6,sprint:8.4},
+  {name:'ADULTO',col:'#E0701A',jump:-13.3,walk:2.3,run:4.9,sprint:9.0},
   {name:'SABIO', col:'#D4503A',jump:-13.6,walk:2.4,run:5.2,sprint:9.6},
   {name:'DORADO',col:'#E8B64A',jump:-13.9,walk:2.5,run:5.5,sprint:10.4}];
 

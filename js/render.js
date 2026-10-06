@@ -9,7 +9,7 @@ import { drawMon, monListo, drawFX, drawAura, MON_PERFIL, MON_FRENTE } from './p
 import { drawSapo } from './summon.js';
 
 function drawBamboo(x,y,w,h){const g=ctx.createLinearGradient(x,0,x+w,0);g.addColorStop(0,'#1a7a28');g.addColorStop(0.25,'#35C94A');g.addColorStop(0.55,'#239F32');g.addColorStop(1,'#0F5C1C');ctx.fillStyle=g;ctx.fillRect(x,y,w,h);ctx.fillStyle='#2B1A10';ctx.fillRect(x-1,y,1,h);ctx.fillRect(x+w,y,1,h);ctx.fillStyle='#45d85a';ctx.fillRect(x,y,w,6);ctx.fillStyle='#0F5C1C';ctx.fillRect(x,y+6,w,3);ctx.fillStyle='#2B1A10';ctx.fillRect(x+Math.round(w/2)-2,y+16,4,h-22);ctx.fillStyle='#0F5C1C';for(let yy=y+40;yy<y+h-10;yy+=36)ctx.fillRect(x+4,yy,w-8,2)}
-function glow(x,y,r,col){const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,col+'ff');g.addColorStop(0.5,col+'88');g.addColorStop(1,col+'00');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill()}
+function glow(x,y,r,col,a){a=a||'ff';const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,col+a);g.addColorStop(0.5,col+'44');g.addColorStop(1,col+'00');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill()}
 
 // Los clones repiten la animacion del heroe 6 fotogramas por detras.
 const RETARDO_CLON = 6;
@@ -82,7 +82,7 @@ function draw(){
     hudText(FORMS[G.form].name+(G.sexy>0?' DISTRACCION':''),W*0.32,10,G.sexy>0?'#FF5CC8':FORMS[G.form].col);
     hudText('VIDAS '+(G.god?'∞':G.lives),W*0.6,10,G.god?'#3ee6ff':'#fff');
     hudText(String(G.score).padStart(6,'0'),W-pd-86,10,'#ffd166');
-    ctx.fillStyle='#0008';ctx.fillRect(pd,32,180,14);ctx.fillStyle=G.charging?'#9ff3ff':'#3ee6ff';ctx.fillRect(pd+2,34,176*G.chakra/100,10);ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.strokeRect(pd+.5,32.5,179,13);
+    ctx.fillStyle='#0008';ctx.fillRect(pd,32,180,14);ctx.fillStyle=G.charging?'#9ff3ff':'#3ee6ff';ctx.fillRect(pd+2,34,176*G.chakra/100,10);const lleno=G.chakra>=100;ctx.strokeStyle=lleno?'#3ee6ff':'#fff';ctx.lineWidth=lleno?2:1;ctx.strokeRect(pd+.5,32.5,179,13);if(lleno){ctx.font='10px "Press Start 2P",monospace';hudText('CARGADO',pd+190,34,'#3ee6ff');ctx.font='14px "Press Start 2P",monospace'}
     const tramo=Math.min(4,1+Math.floor(G.P.x/(COLS*TILE/4)));hudText('TRAMO '+tramo+'/4',W*0.32,32,'#9aa3b8')}
 }
 function hudText(txt,x,y,col){ctx.fillStyle='#000';ctx.fillText(txt,x+2,y+2);ctx.fillStyle=col;ctx.fillText(txt,x,y)}
@@ -94,21 +94,83 @@ function blob(ox,oy,r){ctx.beginPath();ctx.arc(ox,oy+r*0.2,r*0.9,0,7);ctx.arc(ox
 function rhill(x,base,w,h,col,shade,spot){const steps=16;for(let i=0;i<steps;i++){const f=i/steps,hw=w*Math.sqrt(1-f*f),hy=base-h*f;ctx.fillStyle=shade;ctx.fillRect(Math.round(x-hw),Math.round(hy-h/steps),Math.round(hw*0.18)+4,Math.ceil(h/steps)+1);ctx.fillStyle=col;ctx.fillRect(Math.round(x-hw*0.82+4),Math.round(hy-h/steps),Math.round(hw*1.82)-4,Math.ceil(h/steps)+1)}
   ctx.fillStyle=shade;const sp=[[-0.45,0.25,18,10],[0.2,0.55,22,12],[-0.1,0.8,14,8],[0.45,0.3,12,8],[-0.25,0.55,10,6]];for(const [a,b,sw,sh] of sp)ctx.fillRect(Math.round(x+w*a),Math.round(base-h*b),sw,sh);ctx.fillStyle=spot;ctx.fillRect(Math.round(x+w*0.05),Math.round(base-h*0.4),8,6)}
 function drawPlayer(){
-  const F=FORMS[G.form],set=G.sexy>0?DANCER:NINJAS[G.form],col=G.sexy>0?'#FF5CC8':F.col;
-  let sp=set.idle;if(G.sexy>0)sp=Math.floor(G.t/10)%2?set.charge:set.idle;else if(G.charge>0||G.charging)sp=set.charge;else if(G.P.kick>0||G.P.flyKick>0)sp=set.kick;else if(!G.P.ground)sp=set.jump;else if(Math.abs(G.P.vx)>0.5)sp=Math.floor(G.t/(Math.abs(G.P.vx)>4?4:7))%2?set.run1:set.run2;
-  const x=Math.round(G.P.x),y=Math.round(G.P.y);
-  if(G.P.aura>0||G.form>=2||G.charge>0||G.charging){const r=G.charge>0?36+((50-G.charge)/50)*50:G.charging?50+Math.sin(G.t/3)*8:56+Math.sin(G.t/4)*5;glow(x+20,y+45,r,col);drawAura(x+20,y+90,3.2,G.t)}
-  if(G.form===3){ctx.fillStyle='#ffd34a';for(let i=0;i<3;i++){const a=G.t/6+i*2.1;ctx.fillRect(x+20-G.P.face*56+Math.cos(a)*10-4,y+56+Math.sin(a)*12+i*6,8,8)}}
-  if(!G.P.ground&&G.P.vy<2&&G.P.vy>-6){ctx.strokeStyle=col+'aa';ctx.lineWidth=3;ctx.lineWidth=5;ctx.beginPath();ctx.arc(x+20-G.P.face*36,y+80,46,G.P.face>0?Math.PI*1.1:Math.PI*1.6,G.P.face>0?Math.PI*1.45:Math.PI*1.95);ctx.stroke()}
-  ctx.fillStyle=col;ctx.fillRect(x+(G.P.face>0?-26:40),y+16+Math.sin(G.t/5)*3,26,5);ctx.fillRect(x+(G.P.face>0?-22:38),y+24+Math.cos(G.t/5)*3,22,5);
-  const sprinting=Math.abs(G.P.vx)>6&&G.P.ground&&G.P.dash<=0,sxs=G.P.dash>0?1.3:sprinting?1.15:G.P.land>0?1.12:1,sys=G.P.dash>0?0.55:sprinting?0.9:G.P.land>0?0.86:1;
-  if(sprinting){ctx.fillStyle='#9C4406';for(let i=0;i<3;i++)ctx.fillRect(x+20-G.P.face*(34+i*4),y+30+i*18,-G.P.face*22,3)}
-  if(!drawHero(x,y,G.P.face,sxs,sys)){
-    ctx.save();ctx.translate(x+20,y+90);ctx.scale(sxs*(G.P.face<0?-1:1),sys);ctx.drawImage(sp,-30,-90);ctx.restore();
+  const F=FORMS[G.form], set=G.sexy>0?DANCER:NINJAS[G.form], col=G.sexy>0?'#FF5CC8':F.col;
+  let sp=set.idle;
+  if(G.sexy>0)sp=Math.floor(G.t/10)%2?set.charge:set.idle;
+  else if(G.charge>0||G.charging)sp=set.charge;
+  else if(G.P.kick>0||G.P.flyKick>0)sp=set.kick;
+  else if(!G.P.ground)sp=set.jump;
+  else if(Math.abs(G.P.vx)>0.5)sp=Math.floor(G.t/(Math.abs(G.P.vx)>4?4:7))%2?set.run1:set.run2;
+  const x=Math.round(G.P.x), y=Math.round(G.P.y);
+  const conHoja=heroReady();          // con hoja real sobran los adornos de codigo
+  const cargado=G.chakra>=100;
+
+  // ---------- DETRAS del sprite ----------
+  // El halo va suave: antes el centro era opaco y volvia marron el naranja.
+  // El cian es chakra (carga y CARGADO); el color de forma solo con aura activa.
+  if(G.charge>0||G.charging||cargado||G.P.aura>0){
+    const r = G.charge>0 ? 34+((50-G.charge)/50)*44
+            : G.charging ? 46+Math.sin(G.t/3)*7
+            : 42+Math.sin(G.t/4)*4;
+    const esChakra = G.charge>0||G.charging||cargado;
+    glow(x+20,y+45,r, esChakra?'#3ee6ff':col, esChakra?'66':'44');
+    if(G.charge>0||G.charging)drawAura(x+20,y+90,3.2,G.t);
   }
-  if(G.sexy>0){const sw=Math.sin(G.t/6);for(const dx of [-34,74]){ctx.save();ctx.translate(x+dx,y+34+sw*6);ctx.rotate(dx<0?-0.6+sw*0.3:0.6-sw*0.3);ctx.fillStyle='#FF5CC8';ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,30,Math.PI*1.15,Math.PI*1.85);ctx.closePath();ctx.fill();ctx.fillStyle='#FFF6D0';for(let k=0;k<4;k++){ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,27,Math.PI*(1.2+k*0.17),Math.PI*(1.2+k*0.17)+0.08);ctx.closePath();ctx.fill()}ctx.restore()}
-    if(G.t%8==0)G.particles.push({x:x+Math.random()*40,y:y-10,vx:(Math.random()-.5),vy:-1,life:40,col:'#FF5CC8',g:-0.01,heart:true})}
+  // CARGADO: contorno de chakra alrededor del heroe
+  if(cargado&&G.charge<=0){
+    ctx.save(); ctx.globalAlpha=0.5+0.2*Math.sin(G.t/5);
+    ctx.strokeStyle='#3ee6ff'; ctx.lineWidth=2;
+    ctx.strokeRect(x-4,y-4,G.P.w+8,G.P.h+8);
+    ctx.restore(); ctx.globalAlpha=1;
+  }
+  if(G.form===3){            // chispas doradas, detras
+    ctx.fillStyle='#ffd34a';
+    for(let i=0;i<3;i++){const a=G.t/6+i*2.1;
+      ctx.fillRect(x+20-G.P.face*56+Math.cos(a)*10-4,y+56+Math.sin(a)*12+i*6,8,8)}
+  }
+  if(!G.P.ground&&G.P.vy<2&&G.P.vy>-6){   // arco del salto
+    ctx.strokeStyle=col+'88'; ctx.lineWidth=5; ctx.beginPath();
+    ctx.arc(x+20-G.P.face*36,y+80,46,G.P.face>0?Math.PI*1.1:Math.PI*1.6,
+            G.P.face>0?Math.PI*1.45:Math.PI*1.95); ctx.stroke();
+  }
+  const sprinting=Math.abs(G.P.vx)>6&&G.P.ground&&G.P.dash<=0;
+  // Con hoja real el sprint ya trae su propia deformacion: no estirar dos veces.
+  const sxs=G.P.dash>0?1.3:(sprinting&&!conHoja)?1.15:G.P.land>0?1.12:1;
+  const sys=G.P.dash>0?0.55:(sprinting&&!conHoja)?0.9:G.P.land>0?0.86:1;
+  if(sprinting){                          // estela a la espalda, no sobre el cuerpo
+    ctx.save(); ctx.globalAlpha=0.5; ctx.fillStyle=col;
+    for(let i=0;i<3;i++)
+      ctx.fillRect(x+20-G.P.face*(30+i*16), y+46+i*9, -G.P.face*(16-i*3), 3);
+    ctx.restore(); ctx.globalAlpha=1;
+  }
+
+  // ---------- el sprite ----------
+  if(!drawHero(x,y,G.P.face,sxs,sys)){
+    // Respaldo sin hoja: aqui si hacen falta las cintas dibujadas a mano.
+    ctx.fillStyle=col;
+    ctx.fillRect(x+(G.P.face>0?-20:40),y+18+Math.sin(G.t/5)*3,20,4);
+    ctx.fillRect(x+(G.P.face>0?-16:38),y+25+Math.cos(G.t/5)*3,16,4);
+    ctx.save();ctx.translate(x+20,y+90);ctx.scale(sxs*(G.P.face<0?-1:1),sys);
+    ctx.drawImage(sp,-30,-90);ctx.restore();
+  }
+
+  // ---------- DELANTE del sprite ----------
+  if(G.sexy>0){
+    const sw=Math.sin(G.t/6);
+    for(const dx of [-34,74]){
+      ctx.save();ctx.translate(x+dx,y+34+sw*6);ctx.rotate(dx<0?-0.6+sw*0.3:0.6-sw*0.3);
+      ctx.fillStyle='#FF5CC8';ctx.beginPath();ctx.moveTo(0,0);
+      ctx.arc(0,0,30,Math.PI*1.15,Math.PI*1.85);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#FFF6D0';
+      for(let k=0;k<4;k++){ctx.beginPath();ctx.moveTo(0,0);
+        ctx.arc(0,0,27,Math.PI*(1.2+k*0.17),Math.PI*(1.2+k*0.17)+0.08);ctx.closePath();ctx.fill()}
+      ctx.restore();
+    }
+    if(G.t%8==0)G.particles.push({x:x+Math.random()*40,y:y-10,vx:(Math.random()-.5),
+      vy:-1,life:40,col:'#FF5CC8',g:-0.01,heart:true});
+  }
 }
+
 
 /** Esfera de chakra: en la mano, lanzada o cuchilla giratoria. */
 function drawOrbe(o){

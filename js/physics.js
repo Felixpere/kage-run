@@ -45,7 +45,7 @@ function step(){
   G.t++;const F=FORMS[G.form];
   if(pressed.god){G.god=!G.god}if(pressed.hud)G.showHud=!G.showHud;
   for(let i=1;i<=4;i++)if(pressed['f'+i]&&G.form!==i-1){G.form=i-1;G.charge=30;G.P.vx=0;G.chakra=100}
-  if(G.charge>0){G.charge--;G.P.vx=0;if(G.t%2==0)G.particles.push({x:G.P.x+Math.random()*40,y:G.P.y+94,vx:0,vy:-3-Math.random()*2,life:30,col:F.col,g:0});
+  if(G.charge>0){G.charge--;G.P.vx=0;if(G.t%2==0)G.particles.push({x:G.P.x+Math.random()*40,y:G.P.y+94,vx:0,vy:-3-Math.random()*2,life:30,col:'#3ee6ff',g:0});
     if(G.charge===1){G.P.aura=100;burst(G.P.x+20,G.P.y+45,F.col,70,12);G.shake=8;hitstop(40)}}
   // manual G.charge (hold Z) vs rush (tap Z)
   if(keys.orb&&G.form>=1){G.orbHold++;if(G.orbHold>14&&G.P.ground){G.charging=true;G.P.vx=0;G.chakra=Math.min(100,G.chakra+0.9);if(G.t%2==0)G.particles.push({x:G.P.x+Math.random()*40,y:G.P.y+94,vx:0,vy:-3-Math.random()*2,life:30,col:'#3ee6ff',g:0})}}

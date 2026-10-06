@@ -3,7 +3,7 @@
 **▶ Jugar: https://felixpere.github.io/kage-run/**
 
 Plataformero arcade de scroll lateral en HTML5 Canvas, sin dependencias ni
-compilación. Un ninja recorre un reino de bambú y ladrillo recogiendo pergaminos
+compilación. Un niño ninja recorre un reino de bambú y ladrillo recogiendo pergaminos
 de chakra; cada tres pergaminos sube de forma y gana poderes, hasta que deja de
 esquivar el escenario y empieza a demolerlo.
 
@@ -52,8 +52,8 @@ pierde una forma; en Novato, una vida.
 
 | | Forma | Qué desbloquea |
 |---|---|---|
-| **I** | **Novato** · naranja | Correr, saltar, patada |
-| **II** | **Chakra** · cian | Doble salto, clones ×2, distracción |
+| **I** | **Niño** · naranja | Correr, saltar, patada |
+| **II** | **Adulto** · traje negro | Doble salto, clones ×2, distracción |
 | **III** | **Sabio** · haori rojo | Dash bajo, atraviesa enemigos, invocación del sapo, clones ×4 |
 | **IV** | **Dorado** | Dash de fuego con quemaduras, haz dorado, clones ×6 |
 
@@ -63,8 +63,8 @@ No es una técnica fija: cambia por completo con la forma.
 
 | Forma | Qué hace | Coste |
 |---|---|---|
-| **I** Novato | Esfera de 60 px en la mano. Parpadea y se deshace sola al segundo si no toca nada. Embestida de 2 tiles. | 20 |
-| **II** Chakra | Esfera de 120 px en la mano. Embestida de 3 tiles; rompe estructuras y mata al contacto. | 25 |
+| **I** Niño | Esfera de 60 px en la mano. Parpadea y se deshace sola al segundo si no toca nada. Embestida de 2 tiles. | 20 |
+| **II** Adulto | Esfera de 120 px en la mano. Embestida de 3 tiles; rompe estructuras y mata al contacto. | 25 |
 | **III** Sabio | Se **lanza** como proyectil a 9 px/frame. Atraviesa enemigos y revienta la estructura que toca. Alcance 8 tiles. | 30 |
 | **IV** Dorado | **Cuchilla de chakra**: sale girando con cuatro aspas, 16 tiles de alcance, atraviesa todo, y al acabar detona una expansión de 5 tiles que arrasa estructuras y enemigos. | 50 |
 
